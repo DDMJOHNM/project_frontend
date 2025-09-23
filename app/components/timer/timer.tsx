@@ -20,23 +20,21 @@ export default function Timer() {
       const now: number = new Date().getTime();   
       const remainder = timeStart.current - now; 
 
-      setDisplayDate({
-          displayDate : remainder - 1,
-          lastTime: displayDate.lastTime,
-         });
+      setDisplayDate(prevState => ({
+          displayDate: remainder - 1,
+          lastTime: prevState.lastTime,
+      }));
 
       }, 1000);
       return () => {
-        if (isActive){
-          if (intervalId) clearInterval(intervalId);
-        };
-      } 
+        if (intervalId) clearInterval(intervalId);
+      }
      }   
     if(!isActive){
-       setDisplayDate({
-        displayDate : displayDate.lastTime,
-        lastTime: displayDate.displayDate,
-       })       
+       setDisplayDate(prevState => ({
+        displayDate: prevState.lastTime,
+        lastTime: prevState.displayDate,
+       }));       
       }
     }, [isActive]);
 

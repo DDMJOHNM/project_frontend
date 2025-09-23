@@ -1,11 +1,7 @@
-export default function IndexPage({
-  children, // will be a page or nested layout
-}: {
-  children: React.ReactNode
-}) {
+export default function IndexPage() {
   return (
     <section>
-      {children}
+      <h1>Welcome to WhatsTheScore</h1>
     </section>
   )
 }
