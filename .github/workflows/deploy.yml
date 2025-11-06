@@ -41,15 +41,18 @@ jobs:
           
       - name: Set S3 bucket policy
         run: |
-          aws s3api put-bucket-policy --bucket ${{ secrets.AWS_S3_BUCKET }} --policy '{
+          cat >policy.json <<EOF
+          {
             "Version": "2012-10-17",
             "Statement": [
-                {
-                    "Sid": "PublicReadGetObject",
-                    "Effect": "Allow",
-                    "Principal": "*",
-                    "Action": "s3:GetObject",
-                    "Resource": "arn:aws:s3:::${{ secrets.AWS_S3_BUCKET }}/*"
-                }
+              {
+                "Sid": "PublicReadGetObject",
+                "Effect": "Allow",
+                "Principal": "*",
+                "Action": "s3:GetObject",
+                "Resource": "arn:aws:s3:::${{ secrets.AWS_S3_BUCKET }}/*"
+              }
             ]
-        }'
+          }
+          EOF
+          aws s3api put-bucket-policy --bucket ${{ secrets.AWS_S3_BUCKET }} --policy file://policy.json
