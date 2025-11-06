@@ -54,14 +54,14 @@ export async function POST(request: Request) {
         )
       } catch (err) {
         return NextResponse.json(
-          { message: 'An error occurred contacting auth service' },
+          { message: 'An error occurred contacting auth service' + err },
           { status: 500 }
         )
        
       }
     } catch (err) {
       return NextResponse.json(
-        { message: 'Invalid request payload' },
+        { message: 'Invalid request payload' + err },
         { status: 400 }
       )
     }
