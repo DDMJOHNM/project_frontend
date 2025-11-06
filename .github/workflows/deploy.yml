@@ -38,3 +38,18 @@ jobs:
       - name: Deploy to S3
         run: |
           aws s3 sync ./out s3://${{ secrets.AWS_S3_BUCKET }} --delete
+          
+      - name: Set S3 bucket policy
+        run: |
+          aws s3api put-bucket-policy --bucket ${{ secrets.AWS_S3_BUCKET }} --policy '{
+            "Version": "2012-10-17",
+            "Statement": [
+                {
+                    "Sid": "PublicReadGetObject",
+                    "Effect": "Allow",
+                    "Principal": "*",
+                    "Action": "s3:GetObject",
+                    "Resource": "arn:aws:s3:::${{ secrets.AWS_S3_BUCKET }}/*"
+                }
+            ]
+        }'
