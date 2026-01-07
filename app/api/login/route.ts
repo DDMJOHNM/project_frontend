@@ -5,11 +5,11 @@ export async function POST(request: Request) {
   try {
       const { email, password } = await request.json()
       console.log("email:", email)
+      console.log("password:", password)
       
-      const fakeemail = "johnmason"
+      const fakeemail = "johnmason@email.com"
 
-      // Call external login API
-      try {
+      // TODO: Build Auth route to authenticate the user
         const res = await fetch(
           'https://beobftaez9.execute-api.us-west-2.amazonaws.com/prod/login',
           {
@@ -19,25 +19,25 @@ export async function POST(request: Request) {
           }
         )
 
-        if (!res.ok) {
-          // Forward 401 for invalid credentials, otherwise generic failure
-          return NextResponse.json(
-            { message: 'Invalid credentials' },
-            { status: res.status === 401 ? 401 : 400 }
-          )
-        }
+        // if (!res.ok) {
+        //   // Forward 401 for invalid credentials, otherwise generic failure
+        //   return NextResponse.json(
+        //     { message: 'Invalid credentials' },
+        //     { status: res.status === 401 ? 401 : 400 }
+        //   )
+        // }
 
         const data = await res.json()
         const apiToken = data?.token || data?.authToken || data?.session
 
-        if (!apiToken) {
-          return NextResponse.json(
-            { message: 'Auth service did not return a token' },
-            { status: 500 }
-          )
-        }
+        // if (!apiToken) {
+        //   return NextResponse.json(
+        //     { message: 'Auth service did not return a token' },
+        //     { status: 500 }
+        //   )
+        // }
 
-        // Set the token in an HTTP-only cookie and return success
+        // // Set the token in an HTTP-only cookie and return success
         cookies().set('authToken', apiToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
@@ -48,7 +48,7 @@ export async function POST(request: Request) {
         return NextResponse.json(
           {
             message: 'Authenticated successfully',
-            token: apiToken
+            token: ""
           },
           { status: 200 }
         )
@@ -57,12 +57,6 @@ export async function POST(request: Request) {
           { message: 'An error occurred contacting auth service' + err },
           { status: 500 }
         )
-       
       }
-    } catch (err) {
-      return NextResponse.json(
-        { message: 'Invalid request payload' + err },
-        { status: 400 }
-      )
     }
-}
+
