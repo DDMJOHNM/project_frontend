@@ -165,7 +165,7 @@ export default function VoiceAgent() {
                 startRecording()
               }}
               disabled={isProcessing}
-              className="px-0.5 py-0.5 bg-purple-700 hover:bg-purple-800 text-white font-semibold text-sm rounded-lg transition-all duration-200 shadow-md button-shine-purple flex items-center justify-center tracking-widest"
+              className="px-0.5 py-0.5 bg-purple-700 hover:bg-gradient-to-r hover:from-purple-600 hover:via-purple-700 hover:to-purple-800 text-white font-semibold text-sm rounded-lg transition-all duration-200 shadow-md flex items-center justify-center tracking-widest text-glow-purple"
             >
               <span className="flex items-center gap-2 px-3 py-1 border border-white rounded-lg">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -182,8 +182,8 @@ export default function VoiceAgent() {
             disabled={isProcessing}
             className={`px-0.5 py-0.5 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center justify-center ${
               isRecording
-                ? 'bg-red-500 hover:bg-red-600 button-shine-red text-white tracking-widest'
-                : 'bg-purple-700 hover:bg-purple-800 button-shine-purple text-white tracking-widest'
+                ? 'bg-red-500 hover:bg-gradient-to-r hover:from-red-400 hover:via-red-500 hover:to-red-600 text-white tracking-widest text-glow-red'
+                : 'bg-purple-700 hover:bg-gradient-to-r hover:from-purple-600 hover:via-purple-700 hover:to-purple-800 text-white tracking-widest text-glow-purple'
             } ${isProcessing ? 'opacity-50 cursor-not-allowed' : ''}`}
           >
             <span className="flex items-center gap-2 px-3 py-1 border border-white rounded-lg">
@@ -240,7 +240,7 @@ export default function VoiceAgent() {
                 <div className="mt-3 flex gap-3">
                   <button
                     type="button"
-                    className="px-4 py-2 rounded bg-green-600 hover:bg-green-700 button-shine-green text-white text-sm font-semibold tracking-widest transition-all duration-200"
+                    className="px-4 py-2 rounded bg-green-600 hover:bg-gradient-to-r hover:from-green-500 hover:via-green-600 hover:to-green-700 text-white text-sm font-semibold tracking-widest transition-all duration-200 text-glow-green"
                     onClick={() => {
                       // Placeholder: here you could POST these details to your backend
                       console.log('Saved details:', parsedDetails)
@@ -251,7 +251,7 @@ export default function VoiceAgent() {
                   </button>
                   <button
                     type="button"
-                    className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 button-shine-gray text-gray-800 text-sm font-semibold tracking-widest transition-all duration-200"
+                    className="px-4 py-2 rounded bg-gray-300 hover:bg-gradient-to-r hover:from-gray-200 hover:via-gray-300 hover:to-gray-400 text-gray-800 text-sm font-semibold tracking-widest transition-all duration-200 text-glow-gray"
                     onClick={() => {
                       // Allow user to re-record / re-run
                       setParsedDetails(null)

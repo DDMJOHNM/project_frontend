@@ -86,7 +86,7 @@ export default function LoginPage() {
           <div className="flex justify-center mt-8">
             <button
               type="submit"
-              className="group relative flex justify-center py-1.5 px-4 border border-transparent text-sm font-semibold tracking-widest rounded-md text-white bg-teal-700 hover:bg-teal-800 button-shine-teal transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
+              className="group relative flex justify-center py-1.5 px-4 border border-transparent text-sm font-semibold tracking-widest rounded-md text-white bg-teal-700 hover:bg-gradient-to-r hover:from-teal-600 hover:via-teal-700 hover:to-teal-800 text-glow-teal transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-teal-500"
             >
               Sign in
             </button>
