@@ -151,7 +151,7 @@ export default function VoiceAgent() {
                 Thank you for choosing Positive Thought Counselling.
               </p>
               <p className="text-gray-700 mb-6">
-                Let's get your account set up. Press the button below and tell us:
+                Let&apos;s start by getting your account set up. Press the button below and tell us:
               </p>
               <ul className="text-left bg-white rounded-lg p-4 mb-6 inline-block">
                 <li className="text-gray-700 mb-2">✓ Your first name</li>
