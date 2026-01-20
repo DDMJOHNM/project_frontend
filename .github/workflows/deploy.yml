@@ -1,9 +1,12 @@
 name: Deploy to AWS S3
 
+# DISABLED: Now using AWS Amplify for automatic deployments
+# Amplify deploys automatically when you push to main
 on:
-  push:
-    branches:
-      - main  # or your default branch name
+  workflow_dispatch:  # Manual trigger only
+  # push:
+  #   branches:
+  #     - main
 
 jobs:
   deploy:
