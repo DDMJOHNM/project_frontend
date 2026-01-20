@@ -106,9 +106,10 @@ resource "aws_cloudfront_origin_access_control" "website" {
 
 # SSL Certificate (must be in us-east-1 for CloudFront)
 resource "aws_acm_certificate" "website" {
-  provider          = aws.us_east_1
-  domain_name       = var.domain_name
-  validation_method = "DNS"
+  provider                  = aws.us_east_1
+  domain_name               = var.domain_name
+  subject_alternative_names = ["www.${var.domain_name}"]
+  validation_method         = "DNS"
 
   lifecycle {
     create_before_destroy = true
@@ -138,7 +139,7 @@ resource "aws_cloudfront_distribution" "website" {
   default_root_object = "index.html"
   comment             = "CloudFront distribution for ${var.domain_name}"
 
-  aliases = [var.domain_name]
+  aliases = [var.domain_name, "www.${var.domain_name}"]
 
   origin {
     domain_name              = aws_s3_bucket.website.bucket_regional_domain_name
