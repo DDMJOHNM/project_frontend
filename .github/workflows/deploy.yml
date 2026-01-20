@@ -26,6 +26,8 @@ jobs:
         run: pnpm install
         
       - name: Build application
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
         run: pnpm build
         
       - name: Configure AWS credentials
