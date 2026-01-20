@@ -9,15 +9,25 @@ export async function POST(request: Request) {
       
       const fakeemail = "johnmason@email.com"
 
-      // TODO: Build Auth route to authenticate the user
-        const res = await fetch(
-          'https://beobftaez9.execute-api.us-west-2.amazonaws.com/prod/login',
-          {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ "username": fakeemail, "password" : password }),
-          }
+      // Get backend URL from environment variable
+      const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || process.env.BACKEND_URL
+      
+      if (!backendUrl) {
+        return NextResponse.json(
+          { message: 'Backend URL not configured' },
+          { status: 500 }
         )
+      }
+
+      // Call backend API for authentication
+      const res = await fetch(
+        `${backendUrl}/login`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ "username": fakeemail, "password" : password }),
+        }
+      )
 
         // if (!res.ok) {
         //   // Forward 401 for invalid credentials, otherwise generic failure

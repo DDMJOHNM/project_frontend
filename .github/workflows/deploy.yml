@@ -35,6 +35,64 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: us-east-1  # Change this to your desired region
           
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.6.0
+      
+      - name: Terraform Init
+        working-directory: ./terraform
+        run: terraform init
+      
+      - name: Terraform Plan
+        working-directory: ./terraform
+        run: terraform plan -out=tfplan
+        continue-on-error: true
+      
+      - name: Terraform Apply
+        working-directory: ./terraform
+        run: terraform apply -auto-approve tfplan
+        if: github.ref == 'refs/heads/main'
+      
+      - name: Get CloudFront Distribution ID
+        id: cloudfront
+        working-directory: ./terraform
+        run: |
+          DIST_ID=$(terraform output -raw cloudfront_distribution_id 2>/dev/null || echo "")
+          if [ -n "$DIST_ID" ]; then
+            echo "distribution_id=$DIST_ID" >> $GITHUB_OUTPUT
+          fi
+      
+      - name: Update OpenAI API Key in AWS Secrets Manager
+        if: env.OPENAI_KEY != ''
+        env:
+          OPENAI_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          echo "Updating OpenAI API key in AWS Secrets Manager..."
+          aws secretsmanager put-secret-value \
+            --secret-id whatsthescore/openai-api-key \
+            --secret-string "${{ secrets.OPENAI_API_KEY }}" \
+            --region us-east-1 || \
+          aws secretsmanager create-secret \
+            --name whatsthescore/openai-api-key \
+            --secret-string "${{ secrets.OPENAI_API_KEY }}" \
+            --description "OpenAI API Key for voice transcription" \
+            --region us-east-1
+          
       - name: Deploy to S3
         run: |
-          aws s3 sync ./out s3://${{ secrets.AWS_S3_BUCKET }} --delete
+          echo "Deploying to S3 bucket: duskaotearoa.co.nz"
+          aws s3 sync ./out s3://duskaotearoa.co.nz --delete --exact-timestamps
+          
+      - name: Invalidate CloudFront cache
+        if: steps.cloudfront.outputs.distribution_id != '' || env.CLOUDFRONT_ID != ''
+        env:
+          CLOUDFRONT_ID: ${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID || steps.cloudfront.outputs.distribution_id }}
+        run: |
+          DIST_ID="${{ secrets.AWS_CLOUDFRONT_DISTRIBUTION_ID || steps.cloudfront.outputs.distribution_id }}"
+          if [ -n "$DIST_ID" ]; then
+            echo "Invalidating CloudFront cache..."
+            aws cloudfront create-invalidation \
+              --distribution-id "$DIST_ID" \
+              --paths "/*"
+          fi
