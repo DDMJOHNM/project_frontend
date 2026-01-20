@@ -11,10 +11,10 @@ export default function IndexPage() {
   useEffect(() => {
     //TODO: Build Auth route to authenticate the user
     // Check if user is authenticated by verifying the token
-    const token = sessionStorage.getItem('authToken')
-     if (!token) {
-       router.push('/login')
-     }
+    // const token = sessionStorage.getItem('authToken')
+    //  if (!token) {
+    //    router.push('/login')
+    //  }
   }, [router])
 
   return (
