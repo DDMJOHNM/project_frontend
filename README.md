@@ -164,44 +164,6 @@ const corsOptions = {
 
 ---
 
-## 🧹 Cleanup Old AWS Resources
-
-Since you're now using Amplify, you can delete these old resources:
-
-### Safe to Delete
-
-| Resource | Reason | How to Delete |
-|----------|--------|---------------|
-| **CloudFront Distribution** `E209UM3L4LHZOE` | Amplify has its own CDN | AWS Console → CloudFront → Disable → Delete |
-| **S3 Bucket** `duskaotearoa.co.nz` | Amplify hosts your files | AWS Console → S3 → Empty → Delete |
-| **ACM Certificate** | Amplify provides SSL | AWS Console → Certificate Manager → Delete |
-
-### Keep These
-
-| Resource | Reason |
-|----------|--------|
-| **Terraform State** (`duskaotearoa-terraform-state`) | For infrastructure history |
-| **DynamoDB Table** (`terraform-state-lock`) | For Terraform state locking |
-
-### Cleanup Steps
-
-**1. Comment out old resources in Terraform:**
-
-The old S3/CloudFront resources in `terraform/main.tf` are already commented out.
-
-**2. Optional - Clean up via Terraform:**
-```bash
-cd terraform
-terraform apply  # This will remove the commented resources
-```
-
-**3. Optional - Manual cleanup in AWS Console:**
-- Go to CloudFront → Disable distribution → Wait 5-10 mins → Delete
-- Go to S3 → Empty bucket → Delete bucket
-- Go to ACM → Delete certificate
-
----
-
 ## 🛠️ Troubleshooting
 
 ### Build Fails in Amplify
@@ -251,7 +213,6 @@ terraform apply  # This will remove the commented resources
 │   └── page.tsx            # Main page
 ├── amplify.yml              # Amplify build configuration
 ├── next.config.mjs          # Next.js configuration
-├── terraform/               # Infrastructure as code (old S3/CloudFront)
 └── .github/
     └── workflows/
         └── deploy.yml       # GitHub Actions (disabled, using Amplify)
