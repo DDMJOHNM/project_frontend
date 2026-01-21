@@ -75,35 +75,185 @@ git push
 
 ### Prerequisites
 
-- Node.js 20+
-- pnpm (or npm/yarn)
+- **Node.js**: Version 20 or higher ([Download](https://nodejs.org/))
+- **pnpm**: Package manager ([Install](https://pnpm.io/installation))
+  ```bash
+  npm install -g pnpm
+  ```
+- **OpenAI API Key**: Get from [OpenAI Platform](https://platform.openai.com/api-keys)
+- **Backend Running** (optional): For authentication testing
 
-### Setup
+### Step-by-Step Setup
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/DDMJOHNM/project_frontend.git
-   cd project_frontend
-   ```
+#### 1. Clone the Repository
+```bash
+git clone https://github.com/DDMJOHNM/project_frontend.git
+cd project_frontend
+```
 
-2. **Install dependencies**:
-   ```bash
-   pnpm install
-   ```
+#### 2. Install Dependencies
+```bash
+pnpm install
+```
 
-3. **Create `.env.local`** file:
-   ```env
-   OPENAI_API_KEY=sk-your-openai-api-key
-   NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
-   # Or your deployed backend URL
-   ```
+This will install all required packages including:
+- Next.js 14
+- React 18
+- OpenAI SDK
+- TypeScript
+- Tailwind CSS
 
-4. **Run development server**:
-   ```bash
-   pnpm dev
-   ```
+#### 3. Create Environment Variables File
 
-5. **Open** [http://localhost:3000](http://localhost:3000)
+Create a `.env.local` file in the project root:
+
+```bash
+touch .env.local
+```
+
+Add the following variables:
+
+```env
+# Required: Your OpenAI API key
+OPENAI_API_KEY=sk-your-openai-api-key-here
+
+# Optional: Backend URL for authentication
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8080
+
+# Or use your deployed backend:
+# NEXT_PUBLIC_BACKEND_URL=https://your-backend-url.com
+```
+
+**Important**: Never commit `.env.local` to git (it's already in `.gitignore`)
+
+#### 4. Start the Development Server
+```bash
+pnpm dev
+```
+
+You should see:
+```
+▲ Next.js 14.x.x
+- Local:        http://localhost:3000
+- Environments: .env.local
+
+✓ Ready in 2.5s
+```
+
+#### 5. Open Your Browser
+
+Navigate to [http://localhost:3000](http://localhost:3000)
+
+The page will auto-reload when you make changes to the code.
+
+### Available Scripts
+
+```bash
+# Start development server (with hot reload)
+pnpm dev
+
+# Build for production
+pnpm build
+
+# Start production server (after build)
+pnpm start
+
+# Run type checking
+pnpm type-check
+
+# Run linter
+pnpm lint
+```
+
+### Testing API Routes Locally
+
+#### Test Transcription (without backend)
+1. Open [http://localhost:3000](http://localhost:3000)
+2. Click the microphone button
+3. Speak into your microphone
+4. The audio will be transcribed using OpenAI Whisper API
+
+**Note**: Requires `OPENAI_API_KEY` in `.env.local`
+
+#### Test Authentication (requires backend)
+1. Make sure your backend is running at `http://localhost:8080` (or your configured URL)
+2. Open the app and click "Login"
+3. Enter credentials
+4. The `/api/login` route will call your backend
+
+**Without Backend**: Authentication will fail, but other features (transcription, AI agent) will work.
+
+### Local Development with Backend
+
+If you want to test the full app with authentication:
+
+**Option 1: Run Backend Locally**
+```bash
+# In a separate terminal, start your backend
+cd path/to/backend
+# Follow backend setup instructions
+npm start  # or whatever command your backend uses
+```
+
+**Option 2: Use Deployed Backend**
+```env
+# In .env.local, use your deployed backend URL
+NEXT_PUBLIC_BACKEND_URL=https://your-backend-url.com
+```
+
+### Common Issues & Solutions
+
+#### Port Already in Use
+```bash
+# Error: Port 3000 is already in use
+# Solution: Use a different port
+PORT=3001 pnpm dev
+```
+
+#### Module Not Found
+```bash
+# Solution: Clear cache and reinstall
+rm -rf node_modules .next
+pnpm install
+pnpm dev
+```
+
+#### OpenAI API Key Not Working
+```bash
+# Check if .env.local exists and has the correct format
+cat .env.local
+
+# Restart the dev server after adding the key
+# Press Ctrl+C to stop, then run:
+pnpm dev
+```
+
+#### CORS Errors with Backend
+- Make sure your backend allows `http://localhost:3000` in CORS origins
+- Check backend console logs for CORS errors
+
+### Development Tips
+
+**Hot Reload**: Code changes auto-reload, but environment variable changes require restart
+
+**API Route Logs**: Check your terminal for server-side logs from API routes
+
+**Client Logs**: Check browser console (F12) for client-side errors
+
+**VS Code Extensions** (recommended):
+- ESLint
+- Prettier
+- Tailwind CSS IntelliSense
+- TypeScript Vue Plugin (Volar)
+
+### Environment Variables Reference
+
+| Variable | Required | Used For | Example |
+|----------|----------|----------|---------|
+| `OPENAI_API_KEY` | ✅ Yes | Transcription & AI agent | `sk-proj-xxx...` |
+| `NEXT_PUBLIC_BACKEND_URL` | ⚠️ Optional | Authentication API | `http://localhost:8080` |
+
+**Note**: Variables prefixed with `NEXT_PUBLIC_` are accessible in the browser. Never put secrets there!
 
 ---
 
