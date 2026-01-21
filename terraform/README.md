@@ -1,162 +1,253 @@
-# Terraform Infrastructure Setup for duskaotearoa.co.nz
+# Terraform Infrastructure - DEPRECATED FOR FRONTEND
 
-This Terraform configuration creates:
-- S3 bucket: `duskaotearoa.co.nz`
-- CloudFront distribution for HTTPS
-- SSL certificate via ACM
-- Proper security configurations
+⚠️ **Important**: This Terraform configuration is **no longer used** for frontend deployment.
 
-## Prerequisites
+## Current Status
 
-1. AWS CLI configured
-2. Terraform installed (>= 1.0)
-3. IAM user `github-actions-deploy-front-user` with appropriate permissions
+**Frontend Infrastructure**: Managed by **AWS Amplify** (not Terraform)  
+**Custom Domain**: Configured in **Amplify Console** (not via Terraform/DNS)  
+**Terraform Resources**: All S3/CloudFront/ACM resources **disabled** in `main.tf`
 
-## State Backend Setup (S3)
+---
 
-Terraform state is configured to be stored in S3. **Before first use**, create the state bucket:
+## ✅ What's Now Using Amplify
 
-### Quick Setup
+The following infrastructure is managed by AWS Amplify:
 
-```bash
-# Run the bootstrap script
-./terraform/bootstrap-state.sh
+| Resource | Old (Terraform) | New (Amplify) |
+|----------|-----------------|---------------|
+| **Hosting** | S3 bucket `duskaotearoa.co.nz` | Amplify hosting ✅ |
+| **CDN** | CloudFront distribution | Amplify CDN ✅ |
+| **SSL Certificate** | ACM certificate | Amplify SSL ✅ |
+| **Custom Domain** | Manual DNS/CloudFront | Amplify domain management ✅ |
+| **Deployments** | GitHub Actions + Terraform | Amplify auto-deploy ✅ |
+| **API Routes** | Not supported | Lambda@Edge ✅ |
+
+---
+
+## 🔧 Setting Up Custom Domain in Amplify
+
+Since the domain is now managed by Amplify, follow these steps:
+
+### 1. Open Amplify Console
+
+Go to: [AWS Amplify Console](https://console.aws.amazon.com/amplify/)
+
+### 2. Select Your App
+
+Click on your app (e.g., `WhatsTheScore` or your repo name)
+
+### 3. Add Custom Domain
+
+1. Click **"Domain management"** in the left sidebar
+2. Click **"Add domain"**
+3. Enter your domain: `duskaotearoa.co.nz`
+4. Click **"Configure domain"**
+
+### 4. Configure DNS
+
+Amplify will provide DNS records to add. You have two options:
+
+#### Option A: Using Existing DNS Provider (Crazy Domains, etc.)
+
+Add these records at your DNS provider:
+
+```
+Type: CNAME
+Host: www
+Value: [Amplify provides this - something like: xxxxx.cloudfront.net]
+
+Type: A (or ALIAS)
+Host: @ (or leave blank for root domain)
+Value: [Amplify provides this]
 ```
 
-Or manually create:
+#### Option B: Use Route 53 (Recommended)
+
+Let Amplify manage DNS automatically:
+1. Click **"Use Route 53"** in Amplify Console
+2. Amplify creates a hosted zone and all DNS records
+3. Update nameservers at your registrar (Crazy Domains) to Route 53 nameservers
+4. Wait for propagation (1-48 hours, usually 2-6 hours)
+
+### 5. Wait for SSL Certificate
+
+Amplify automatically:
+- Provisions SSL certificate
+- Validates via DNS
+- Enables HTTPS
+
+**Time**: 5-30 minutes after DNS records are added
+
+### 6. Verify Domain
+
+Once complete, your app will be accessible at:
+- `https://duskaotearoa.co.nz`
+- `https://www.duskaotearoa.co.nz` (if configured)
+
+---
+
+## 📂 What's Still in This Directory
+
+### Active Resources
+
+**Terraform State Backend** (still exists):
 - S3 bucket: `duskaotearoa-terraform-state`
 - DynamoDB table: `terraform-state-lock`
 
-See `SETUP_STATE_BACKEND.md` for detailed instructions.
+**Purpose**: Stores Terraform state for historical purposes or if you need to manage other AWS resources via Terraform in the future.
 
-## Required IAM Permissions
+### Disabled Resources (in `main.tf`)
 
-Your IAM user `github-actions-deploy-front-user` needs these permissions:
+All frontend resources are commented out:
+- ❌ S3 bucket for website hosting
+- ❌ CloudFront distribution
+- ❌ ACM certificate
+- ❌ Origin Access Control
+- ❌ S3 bucket policies
 
-```json
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Action": [
-        "s3:PutObject",
-        "s3:GetObject",
-        "s3:DeleteObject",
-        "s3:ListBucket",
-        "s3:PutBucketPolicy",
-        "s3:GetBucketPolicy"
-      ],
-      "Resource": [
-        "arn:aws:s3:::duskaotearoa.co.nz",
-        "arn:aws:s3:::duskaotearoa.co.nz/*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "cloudfront:CreateDistribution",
-        "cloudfront:GetDistribution",
-        "cloudfront:UpdateDistribution",
-        "cloudfront:DeleteDistribution",
-        "cloudfront:CreateInvalidation",
-        "cloudfront:GetInvalidation",
-        "cloudfront:ListInvalidations",
-        "cloudfront:ListDistributions"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "acm:RequestCertificate",
-        "acm:DescribeCertificate",
-        "acm:ListCertificates",
-        "acm:DeleteCertificate"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "route53:GetHostedZone",
-        "route53:ListHostedZones",
-        "route53:ChangeResourceRecordSets"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "secretsmanager:GetSecretValue",
-        "secretsmanager:PutSecretValue",
-        "secretsmanager:CreateSecret",
-        "secretsmanager:DescribeSecret"
-      ],
-      "Resource": "arn:aws:secretsmanager:*:*:secret:whatsthescore/openai-api-key*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "sts:GetCallerIdentity"
-      ],
-      "Resource": "*"
-    }
-  ]
+**Note**: All resources have "DISABLED (Using AWS Amplify instead)" comments.
+
+---
+
+## 🗑️ Optional Cleanup
+
+If you want to remove the old resources that were created by Terraform before switching to Amplify:
+
+### Manual Cleanup (AWS Console)
+
+**1. Delete CloudFront Distribution** (if exists):
+```
+AWS Console → CloudFront → Distribution E209UM3L4LHZOE
+→ Disable → Wait 5-10 mins → Delete
+```
+
+**2. Delete S3 Bucket** (if exists):
+```
+AWS Console → S3 → duskaotearoa.co.nz
+→ Empty bucket → Delete bucket
+```
+
+**3. Delete ACM Certificate** (if exists):
+```
+AWS Console → Certificate Manager → us-east-1 region
+→ Select certificate → Delete
+```
+
+### Keep These Resources
+
+- ✅ Terraform state bucket: `duskaotearoa-terraform-state`
+- ✅ DynamoDB table: `terraform-state-lock`
+
+**Why?** You might need these for other Terraform-managed infrastructure.
+
+---
+
+## 🚀 If You Need to Use Terraform Again
+
+If you want to manage other AWS resources (not frontend) with Terraform:
+
+### 1. Initialize Terraform
+
+```bash
+cd terraform
+terraform init
+```
+
+### 2. Create New Resources
+
+Add new resources to `main.tf` or create new `.tf` files for:
+- Backend infrastructure (if not using Amplify)
+- Databases (RDS, DynamoDB)
+- Other AWS services
+- Monitoring/logging resources
+
+### 3. Apply Changes
+
+```bash
+terraform plan
+terraform apply
+```
+
+**Note**: Frontend resources remain disabled. Don't uncomment them - use Amplify instead.
+
+---
+
+## 📋 Terraform State Backend
+
+If you need to configure Terraform state backend for other resources:
+
+### Bootstrap Script
+
+```bash
+./terraform/bootstrap-state.sh
+```
+
+This creates (if they don't exist):
+- S3 bucket: `duskaotearoa-terraform-state`
+- DynamoDB table: `terraform-state-lock`
+
+### Manual Configuration
+
+Already configured in `backend.tf`:
+```hcl
+terraform {
+  backend "s3" {
+    bucket         = "duskaotearoa-terraform-state"
+    key            = "duskaotearoa.co.nz/terraform.tfstate"
+    region         = "us-east-1"
+    encrypt        = true
+    dynamodb_table = "terraform-state-lock"
+  }
 }
 ```
 
-## Setup Steps
+---
 
-1. **Initialize Terraform**:
-   ```bash
-   cd terraform
-   terraform init
-   ```
+## ❓ FAQ
 
-2. **Plan the deployment**:
-   ```bash
-   terraform plan
-   ```
+### Why not use Terraform for frontend?
 
-3. **Apply the configuration**:
-   ```bash
-   terraform apply
-   ```
+**Reasons for switching to Amplify**:
+- ✅ Native support for Next.js API routes
+- ✅ Automatic deployments from GitHub
+- ✅ Simpler configuration
+- ✅ Built-in SSL certificate management
+- ✅ No manual DNS configuration needed
+- ✅ Better integration with serverless functions
+- ✅ No need to manage S3/CloudFront manually
 
-4. **Get DNS validation records**:
-   After applying, Terraform will output DNS validation records. You need to add these to your DNS provider (where duskaotearoa.co.nz is hosted).
+### Can I switch back to Terraform?
 
-5. **Wait for certificate validation** (can take 5-30 minutes)
+Yes, but **not recommended**:
+- Next.js API routes won't work with static S3 hosting
+- You'd need to set up Lambda@Edge or API Gateway separately
+- More complex deployment pipeline
+- Manual certificate and DNS management
 
-6. **Update DNS**:
-   - Create a CNAME record pointing `duskaotearoa.co.nz` to the CloudFront domain name
-   - Or use Route 53 alias if your domain is in Route 53
+### What if I want to manage DNS with Terraform?
 
-## GitHub Actions Setup
+You can use Terraform for Route 53 DNS separately:
+1. Create a new `.tf` file for Route 53 resources
+2. Point DNS to your Amplify distribution
+3. Keep frontend hosting in Amplify
 
-Add these secrets to your GitHub repository:
+---
 
-- `AWS_ACCESS_KEY_ID` - Access key for `github-actions-deploy-front-user`
-- `AWS_SECRET_ACCESS_KEY` - Secret key for `github-actions-deploy-front-user`
-- `AWS_S3_BUCKET` - Set to `duskaotearoa.co.nz`
-- `AWS_REGION` - Your AWS region (e.g., `us-east-1`)
-- `AWS_CLOUDFRONT_DISTRIBUTION_ID` - CloudFront distribution ID (from Terraform output)
+## 📞 Support
 
-## Backend HTTPS Configuration
+**For frontend deployment issues**: Check the main [README.md](../README.md)  
+**For Amplify setup**: See [AWS Amplify Console](https://console.aws.amazon.com/amplify/)  
+**For DNS issues**: Check your domain registrar or use Route 53
 
-To ensure your frontend can hit your backend via HTTPS:
+---
 
-1. Make sure your backend API endpoints use HTTPS
-2. Update your frontend API calls to use the HTTPS backend URL
-3. Configure CORS on your backend to allow requests from `https://duskaotearoa.co.nz`
+## Summary
 
-## Outputs
+- 🚫 **Don't use this Terraform config** for frontend deployment
+- ✅ **Use AWS Amplify** for frontend infrastructure
+- ✅ **Configure custom domain** in Amplify Console
+- 📂 **Keep Terraform state backend** for potential future use
+- 🗑️ **Optional**: Clean up old S3/CloudFront resources
 
-After `terraform apply`, you'll get:
-- S3 bucket name
-- CloudFront distribution ID
-- CloudFront domain name
-- Certificate ARN
-- DNS validation records
-
+**For deployment instructions, see the main [README.md](../README.md)**
