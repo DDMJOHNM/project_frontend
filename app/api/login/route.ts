@@ -42,15 +42,12 @@ export async function POST(request: Request) {
             )
           } catch (parseError) {
             // If JSON parsing fails, return generic error
-            // parseError is of type 'unknown', so we need to safely access message if present
-            let errMsg = 'Invalid credentials';
-            if (parseError && typeof parseError === 'object' && 'message' in parseError) {
-              errMsg += (parseError as { message?: string }).message ?? '';
-            }
             return NextResponse.json(
-              { message: errMsg },
+              { message: 'Invalid credentials' },
               { status: res.status }
             )
+          }
+        }
 
         const data = await res.json()
         const apiToken = data?.token || data?.authToken || data?.session
