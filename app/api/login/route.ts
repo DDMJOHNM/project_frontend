@@ -60,12 +60,12 @@ export async function POST(request: Request) {
           )
         }
 
-        // // Set the token in an HTTP-only cookie and return success
+          // Set the token in an HTTP-only cookie and return success
           cookies().set('authToken', apiToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'strict',
-          maxAge: 7 * 24 * 60 * 60 // 1 week
+          maxAge: 1 * 60 * 60 
         })
 
         return NextResponse.json(
