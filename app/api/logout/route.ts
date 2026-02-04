@@ -3,7 +3,8 @@ import { cookies } from 'next/headers'
 
 export async function POST() {
   try {
-    // Clear the auth cookies
+    //TODO: we need to call the backend to logout the user
+    //AND Clear the auth cookies
     cookies().delete('authToken')
     cookies().delete('loginTime')
     
