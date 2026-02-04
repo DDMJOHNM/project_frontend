@@ -12,6 +12,7 @@ export async function POST() {
       { status: 200 }
     )
   } catch (err) {
+    console.log("JSON parsing failed:", JSON.stringify(err))
     return NextResponse.json(
       { message: 'An error occurred during logout' },
       { status: 500 }
