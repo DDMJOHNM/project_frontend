@@ -1,21 +1,17 @@
-'use client'
-
-import { useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
 import VoiceAgent from './components/VoiceAgent'
 import Logo from './components/Logo'
 
 export default function IndexPage() {
-  const router = useRouter()
-
-  useEffect(() => {
-    //TODO: Build Auth route to authenticate the user
-    // Check if user is authenticated by verifying the token
-    // const token = sessionStorage.getItem('authToken')
-    //  if (!token) {
-    //    router.push('/login')
-    //  }
-  }, [router])
+  // Check authentication server-side by reading the HTTP-only cookie
+  const cookieStore = cookies()
+  const authToken = cookieStore.get('authToken')
+  
+  // If no auth token, redirect to login
+  if (!authToken) {
+    redirect('/login')
+  }
 
   return (
     <div>

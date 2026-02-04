@@ -24,9 +24,7 @@ export default function LoginPage() {
       const data = await response.json()
 
       if (response.ok) {
-        // Store the token in both sessionStorage and cookies
-        sessionStorage.setItem('authToken', data.token)
-        // The cookie will be set by the API response
+        // The token is stored in an HTTP-only cookie by the API
         router.push('/') // Redirect to home page after successful login
       } else {
         setError(data.message || 'Invalid email or password')
