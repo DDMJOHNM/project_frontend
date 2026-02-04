@@ -7,10 +7,24 @@ export default function IndexPage() {
   // Check authentication server-side by reading the HTTP-only cookie
   const cookieStore = cookies()
   const authToken = cookieStore.get('authToken')
+  const loginTime = cookieStore.get('loginTime')
   
   // If no auth token, redirect to login
   if (!authToken) {
     redirect('/login')
+  }
+  
+  // Check if session has expired (1 hour = 3600000 milliseconds)
+  if (loginTime) {
+    const loginTimestamp = parseInt(loginTime.value)
+    const now = Date.now()
+    const sessionDuration = now - loginTimestamp
+    const maxSessionDuration = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
+    
+    if (sessionDuration > maxSessionDuration) {
+      // Session expired, redirect to login
+      redirect('/login')
+    }
   }
 
   return (
