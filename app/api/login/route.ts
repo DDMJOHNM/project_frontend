@@ -41,6 +41,7 @@ export async function POST(request: Request) {
               { status: res.status }
             )
           } catch (parseError) {
+            console.log("JSON parsing failed:", parseError)
             // If JSON parsing fails, return generic error
             return NextResponse.json(
               { message: 'Invalid credentials' },
