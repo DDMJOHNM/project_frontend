@@ -50,7 +50,6 @@ export async function POST(request: Request) {
           }
         }
 
-        //is this check still needed?
         const data = await res.json()
         const apiToken = data?.token || data?.authToken || data?.session
 
@@ -62,12 +61,15 @@ export async function POST(request: Request) {
         }
 
           // Set the token in an HTTP-only cookie and return success
-          const expiresInSeconds = 1 * 60 * 60 // 1 hour
+          const expiresInSeconds = 1 * 60 
+          // try 1 min for testing
+
           
           cookies().set('authToken', apiToken, {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: 'lax', // 'lax' is better for production with custom domains
+          path: '/',
           maxAge: expiresInSeconds
         })
         
@@ -75,7 +77,8 @@ export async function POST(request: Request) {
         cookies().set('loginTime', Date.now().toString(), {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
-          sameSite: 'strict',
+          sameSite: 'lax',
+          path: '/',
           maxAge: expiresInSeconds
         })
 
