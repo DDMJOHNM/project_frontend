@@ -14,17 +14,17 @@ export default function IndexPage() {
     redirect('/login')
   }
   
-  // Check if session has expired (1 minute = 60000 milliseconds) - FOR TESTING
+  // Check if session has expired (1 hour = 3600000 milliseconds)
   if (loginTime) {
     const loginTimestamp = parseInt(loginTime.value)
     const now = Date.now()
     const sessionDuration = now - loginTimestamp
-    const maxSessionDuration = 1 * 60 * 1000 // 1 minute in milliseconds - FOR TESTING
+    const maxSessionDuration = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
     
     if (sessionDuration > maxSessionDuration) {
       // Session expired, redirect to login
       redirect('/login')
-    }
+      }
   }
 
   return (

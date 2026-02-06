@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         }
 
           // Set the token in an HTTP-only cookie and return success
-          const expiresInSeconds = 1 * 60 // 1 minute in seconds (60) - FOR TESTING
+          const expiresInSeconds = 1 * 60 * 60 // 1 hour in seconds (3600)
                  
           cookies().set('authToken', apiToken, {
           httpOnly: true,
