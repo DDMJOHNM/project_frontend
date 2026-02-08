@@ -3,14 +3,27 @@ import { redirect } from 'next/navigation'
 import VoiceAgent from './components/VoiceAgent'
 import Logo from './components/Logo'
 
+// Force dynamic rendering (no caching) - required for auth checks
+export const dynamic = 'force-dynamic'
+
 export default function IndexPage() {
   // Check authentication server-side by reading the HTTP-only cookie
   const cookieStore = cookies()
   const authToken = cookieStore.get('authToken')
   const loginTime = cookieStore.get('loginTime')
   
+  // DEBUG: Log what we're seeing (will appear in Amplify CloudWatch logs)
+  console.log('========== AUTH CHECK START ==========')
+  console.log('Server time:', new Date().toISOString())
+  console.log('Has authToken:', !!authToken)
+  console.log('Has loginTime:', !!loginTime)
+  console.log('authToken value:', authToken?.value ? 'EXISTS' : 'MISSING')
+  console.log('loginTime value:', loginTime?.value || 'MISSING')
+  
   // If no auth token, redirect to login
   if (!authToken) {
+    console.log('❌ NO AUTH TOKEN - Redirecting to login')
+    console.log('========== AUTH CHECK END ==========')
     redirect('/login')
   }
   
@@ -21,11 +34,27 @@ export default function IndexPage() {
     const sessionDuration = now - loginTimestamp
     const maxSessionDuration = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
     
+    console.log('Login timestamp:', new Date(loginTimestamp).toISOString())
+    console.log('Current timestamp:', new Date(now).toISOString())
+    console.log('Session duration (seconds):', Math.floor(sessionDuration / 1000))
+    console.log('Max duration (seconds):', Math.floor(maxSessionDuration / 1000))
+    console.log('Is expired:', sessionDuration > maxSessionDuration)
+    
     if (sessionDuration > maxSessionDuration) {
       // Session expired, redirect to login
+      console.log('❌ SESSION EXPIRED - Redirecting to login')
+      console.log('========== AUTH CHECK END ==========')
       redirect('/login')
-      }
+    } else {
+      console.log('✅ Session valid, remaining seconds:', Math.floor((maxSessionDuration - sessionDuration) / 1000))
+    }
+  } else {
+    console.log('⚠️  No loginTime cookie found - this is a bug! authToken exists but loginTime missing')
   }
+  
+  console.log('✅ AUTH CHECK PASSED - Rendering page')
+  console.log('========== AUTH CHECK END ==========')
+
 
   return (
     <div>

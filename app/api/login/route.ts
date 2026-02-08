@@ -62,6 +62,15 @@ export async function POST(request: Request) {
 
           // Set the token in an HTTP-only cookie and return success
           const expiresInSeconds = 1 * 60 * 60 // 1 hour in seconds (3600)
+          const loginTimestamp = Date.now()
+          
+          console.log('========== SETTING COOKIES ==========')
+          console.log('Token received from backend:', apiToken ? 'EXISTS' : 'MISSING')
+          console.log('Login timestamp:', new Date(loginTimestamp).toISOString())
+          console.log('Cookie maxAge (seconds):', expiresInSeconds)
+          console.log('Cookie expires at:', new Date(Date.now() + (expiresInSeconds * 1000)).toISOString())
+          console.log('Environment:', process.env.NODE_ENV)
+          console.log('Secure flag:', process.env.NODE_ENV === 'production')
                  
           cookies().set('authToken', apiToken, {
           httpOnly: true,
@@ -72,13 +81,16 @@ export async function POST(request: Request) {
         })
         
         // Set login timestamp to verify session age
-        cookies().set('loginTime', Date.now().toString(), {
+        cookies().set('loginTime', loginTimestamp.toString(), {
           httpOnly: true,
           secure: process.env.NODE_ENV === 'production',
           sameSite: 'lax',
           path: '/',
           maxAge: expiresInSeconds
         })
+        
+        console.log('✅ Cookies set successfully')
+        console.log('========== COOKIES SET END ==========')
 
         return NextResponse.json(
           {
