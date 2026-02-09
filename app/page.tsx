@@ -5,6 +5,8 @@ import Logo from './components/Logo'
 
 // Force dynamic rendering (no caching) - required for auth checks
 export const dynamic = 'force-dynamic'
+export const revalidate = 0
+export const fetchCache = 'force-no-store'
 
 export default function IndexPage() {
   // Check authentication server-side by reading the HTTP-only cookie

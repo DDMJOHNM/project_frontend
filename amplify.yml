@@ -18,8 +18,34 @@ frontend:
       - node_modules/**/*
       - .next/cache/**/*
   customHeaders:
-    - pattern: '**/*'
+    # Cache static assets (JS, CSS, images) for 1 year
+    - pattern: '**/*.js'
       headers:
         - key: 'Cache-Control'
           value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.css'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.png'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.jpg'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    - pattern: '**/*.ico'
+      headers:
+        - key: 'Cache-Control'
+          value: 'public, max-age=31536000, immutable'
+    # DO NOT cache HTML pages - they need dynamic rendering for auth
+    - pattern: '**/*.html'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-cache, no-store, must-revalidate'
+    - pattern: '/'
+      headers:
+        - key: 'Cache-Control'
+          value: 'no-cache, no-store, must-revalidate'
 
