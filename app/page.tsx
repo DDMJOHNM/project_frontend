@@ -29,12 +29,12 @@ export default function IndexPage() {
     redirect('/login')
   }
   
-  // Check if session has expired (1 hour = 3600000 milliseconds)
+  // Check if session has expired (5 minutes = 300000 milliseconds) - FOR TESTING
   if (loginTime) {
     const loginTimestamp = parseInt(loginTime.value)
     const now = Date.now()
     const sessionDuration = now - loginTimestamp
-    const maxSessionDuration = 1 * 60 * 60 * 1000 // 1 hour in milliseconds
+    const maxSessionDuration = 5 * 60 * 1000 // 5 minutes in milliseconds - FOR TESTING
     
     console.log('Login timestamp:', new Date(loginTimestamp).toISOString())
     console.log('Current timestamp:', new Date(now).toISOString())

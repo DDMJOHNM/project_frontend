@@ -61,7 +61,7 @@ export async function POST(request: Request) {
         }
 
           // Set the token in an HTTP-only cookie and return success
-          const expiresInSeconds = 1 * 60 * 60 // 1 hour in seconds (3600)
+          const expiresInSeconds = 5 * 60 // 5 minutes in seconds (300) - FOR TESTING
           const loginTimestamp = Date.now()
           
           console.log('========== SETTING COOKIES ==========')
