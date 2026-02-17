@@ -1,4 +1,4 @@
-# Positive Thought 
+# Positive Thought Counselling
 
 ## Architecture Overview  - Onboarding 
 
