@@ -1,4 +1,4 @@
-# Positive Thought Counselling
+# Positive Thought Counselling - Mental Health Counselling Client Management System
 
 ## Architecture Overview  - Onboarding 
 
