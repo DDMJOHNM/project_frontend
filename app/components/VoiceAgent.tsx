@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-
+import { CounsellingRecommendation } from './CounsellingRecommendation'
 export default function VoiceAgent() {
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
@@ -273,6 +273,8 @@ export default function VoiceAgent() {
               </div>
             </div>
           )}
+
+          <CounsellingRecommendation />
           </div>
         )}
       </div>

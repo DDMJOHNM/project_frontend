@@ -66,9 +66,39 @@ The system uses a Next.js frontend that integrates an OpenAI-powered onboarding 
 
 ## Architecture Overview  - Client Introductory Notes
 
-## Architecture Overview  - Practitioner Reccomendation Module And Calendar Appointment
+## Architecture Overview - Counsellor Recommendation Module And Calendar Appointment
 
-Expertise abstracted away in vector database
+**✅ IMPLEMENTED!** AI-powered counsellor matching using LangChain + Vector Database
+
+Matches clients with the right mental health counsellor based on their concerns. Includes 7 counsellors specializing in: anxiety, depression, trauma/PTSD, grief, couples therapy, addiction, OCD, and child/adolescent issues.
+
+### Local Development (ChromaDB - Free)
+```bash
+# Option 1: In-Memory (No Docker needed!)
+USE_LOCAL_VECTOR_DB=true
+CHROMA_IN_MEMORY=true
+npm run seed:counselling && npm run dev
+
+# Option 2: Docker ChromaDB (persistent data)
+docker run -p 8000:8000 chromadb/chroma
+USE_LOCAL_VECTOR_DB=true
+npm run seed:counselling && npm run dev
+```
+
+### AWS Production Deployment (Pinecone - Free Tier)
+```bash
+# 1. Get Pinecone API key from pinecone.io (FREE - no minimum)
+# 2. Add to Amplify environment variables:
+#    - USE_LOCAL_VECTOR_DB=false
+#    - PINECONE_API_KEY=your-key
+# 3. Seed production database (run locally once):
+USE_LOCAL_VECTOR_DB=false npm run seed:counselling
+# 4. Push to GitHub (auto-deploys to Amplify)
+```
+
+**Cost:** $0/month (both ChromaDB & Pinecone free tiers) + ~$5-20/month (OpenAI only)
+
+📖 **Full Guide:** [HYBRID_SETUP_GUIDE.md](HYBRID_SETUP_GUIDE.md)
 
 ## Architecture Overview  - Client Image Upload And Findings
 
