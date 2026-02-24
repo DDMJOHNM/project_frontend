@@ -51,9 +51,13 @@ Treats conditions related to: ${practitioner.specialties.join(", ")}
 
 // Seed the vector database with practitioners
 export async function seedPractitioners(practitioners: Practitioner[]) {
+  if (practitioners.length === 0) {
+    throw new Error("Cannot seed: practitioners array is empty");
+  }
+
   const storeType = getVectorStoreType();
-  console.log(`Starting to seed practitioners into ${storeType.toUpperCase()}...`);
-  
+  console.log(`Starting to seed ${practitioners.length} practitioners into ${storeType.toUpperCase()}...`);
+
   // Convert practitioners to documents
   const documents = practitioners.map(practitionerToDocument);
 

@@ -1,9 +1,14 @@
 // Vector store abstraction - supports both Chroma (local) and Pinecone (production)
 
+import { v4 as uuidv4 } from "uuid";
+// @ts-expect-error - flat has no types; used for metadata flattening (matches LangChain)
+import flatten from "flat";
 import { VectorStore } from "@langchain/core/vectorstores";
 import { Document } from "@langchain/core/documents";
 import { getEmbeddings } from "./embeddings";
 import { getPineconeClient, PINECONE_INDEX_NAME, PINECONE_NAMESPACE } from "./pinecone-client";
+
+const TEXT_KEY = "text"; // Pinecone metadata key for page content (matches LangChain default)
 
 export type VectorStoreType = "chroma" | "pinecone";
 
@@ -66,10 +71,14 @@ export async function getVectorStore(): Promise<VectorStore> {
 
 // Create and seed a new vector store
 export async function createVectorStore(documents: Document[]): Promise<VectorStore> {
+  if (documents.length === 0) {
+    throw new Error("Cannot create vector store: documents array is empty");
+  }
+
   const embeddings = getEmbeddings();
   const storeType = getVectorStoreType();
 
-  console.log(`Creating vector store: ${storeType.toUpperCase()}`);
+  console.log(`Creating vector store: ${storeType.toUpperCase()} with ${documents.length} documents`);
 
   if (storeType === "chroma") {
     // Create Chroma collection - dynamic import
@@ -91,11 +100,75 @@ export async function createVectorStore(documents: Document[]): Promise<VectorSt
     const pineconeClient = await getPineconeClient();
     const index = pineconeClient.index(PINECONE_INDEX_NAME);
 
-    return await PineconeStore.fromDocuments(documents, embeddings, {
-      pineconeIndex: index,
-      namespace: PINECONE_NAMESPACE,
-    });
+    try {
+      return await PineconeStore.fromDocuments(documents, embeddings, {
+        pineconeIndex: index,
+        namespace: PINECONE_NAMESPACE,
+      });
+    } catch (error) {
+      // Fallback: @langchain/pinecone was built for Pinecone v5 and passes arrays to upsert().
+      // Pinecone v7 expects { records: [...] }. Use direct SDK upsert with correct API.
+      const errMessage = error instanceof Error ? error.message : String(error);
+      if (errMessage.includes("at least 1 record") || errMessage.includes("Must pass in")) {
+        console.warn("LangChain Pinecone API mismatch (v5 vs v7), using direct SDK upsert:", errMessage);
+        return await seedPineconeDirect(documents, embeddings, index);
+      }
+      throw error;
+    }
   }
+}
+
+// Direct Pinecone v7 upsert - bypasses LangChain which uses outdated API (passes array instead of { records })
+async function seedPineconeDirect(
+  documents: Document[],
+  embeddings: Awaited<ReturnType<typeof getEmbeddings>>,
+  index: Awaited<ReturnType<typeof getPineconeClient>> extends infer C
+    ? C extends { index: (name: string) => infer I }
+      ? I
+      : never
+    : never
+): Promise<VectorStore> {
+  const texts = documents.map((d) => d.pageContent);
+  const vectors = await embeddings.embedDocuments(texts);
+
+  const records = documents.map((doc, idx) => {
+    const documentMetadata = { ...doc.metadata };
+    const stringArrays: Record<string, string[]> = {};
+    for (const key of Object.keys(documentMetadata)) {
+      if (
+        Array.isArray(documentMetadata[key]) &&
+        documentMetadata[key].every((el: unknown) => typeof el === "string")
+      ) {
+        stringArrays[key] = documentMetadata[key] as string[];
+        delete documentMetadata[key];
+      }
+    }
+    const metadata: Record<string, unknown> = {
+      ...flatten(documentMetadata as Record<string, unknown>),
+      ...stringArrays,
+      [TEXT_KEY]: doc.pageContent,
+    };
+    for (const key of Object.keys(metadata)) {
+      if (metadata[key] == null) delete metadata[key];
+      else if (typeof metadata[key] === "object" && Object.keys(metadata[key] as object).length === 0)
+        delete metadata[key];
+    }
+    return {
+      id: (doc.metadata.id as string) ?? uuidv4(),
+      values: vectors[idx],
+      metadata,
+    };
+  });
+
+  const namespace = index.namespace(PINECONE_NAMESPACE);
+  await namespace.upsert({ records: records as Parameters<typeof namespace.upsert>[0]["records"] });
+
+  const { PineconeStore } = await import("@langchain/pinecone");
+  return new PineconeStore(embeddings, {
+    pineconeIndex: index,
+    namespace: PINECONE_NAMESPACE,
+    textKey: TEXT_KEY,
+  });
 }
 
 // Search for similar documents
