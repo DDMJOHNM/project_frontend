@@ -1,6 +1,3 @@
-// API route for counselling practitioner recommendations
-// POST /api/counselling/recommend
-
 import { NextRequest, NextResponse } from "next/server";
 import { getCounsellingRecommendation, getStructuredRecommendation } from "@/lib/counselling/agent";
 
@@ -14,7 +11,7 @@ interface RequestBody {
 
 export async function POST(request: NextRequest) {
   try {
-    // Parse request body
+
     const body: RequestBody = await request.json();
     
     if (!body.description || typeof body.description !== "string") {
@@ -26,7 +23,6 @@ export async function POST(request: NextRequest) {
 
     const format = body.format || "text";
 
-    // Validate environment variables
     if (!process.env.OPENAI_API_KEY) {
       return NextResponse.json(
         { error: "OpenAI API key not configured" },
@@ -34,7 +30,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Check vector store configuration
     const useLocal = process.env.USE_LOCAL_VECTOR_DB === "true";
     if (!useLocal && !process.env.PINECONE_API_KEY) {
       return NextResponse.json(
@@ -43,7 +38,6 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Get recommendations based on format
     if (format === "structured") {
       const recommendations = await getStructuredRecommendation(body.description);
       return NextResponse.json({
@@ -72,7 +66,6 @@ export async function POST(request: NextRequest) {
   }
 }
 
-// GET endpoint for health check
 export async function GET() {
   const { getVectorStoreInfo } = await import("@/lib/counselling/vector-store");
   const vectorStoreInfo = getVectorStoreInfo();

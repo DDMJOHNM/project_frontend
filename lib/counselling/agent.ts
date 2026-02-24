@@ -7,7 +7,6 @@ import { z } from "zod";
 import { searchPractitioners } from "./embeddings";
 import { Practitioner, RecommendationResult } from "./types";
 
-// Tool for searching practitioners in the vector database
 const searchPractitionersTool = tool(
   async ({ concernDescription, numResults = 3 }) => {
     try {
@@ -16,8 +15,7 @@ const searchPractitionersTool = tool(
       if (results.length === 0) {
         return "No matching practitioners found. Recommend contacting a general counsellor for initial assessment.";
       }
-
-      // Format results for the agent
+   
       const formattedResults = results.map(({ document, score }, index) => {
         const metadata = document.metadata;
         return `
@@ -58,7 +56,6 @@ ${document.pageContent.substring(0, 300)}...
   }
 );
 
-// System prompt for the mental health counselling recommendation agent
 const systemPrompt = `You are a compassionate mental health intake coordinator for Positive Thought Counselling that helps clients find the right counsellor for their specific needs.
 
 Your role is to:
@@ -87,7 +84,6 @@ Format your response clearly with:
 - For crisis situations, always include immediate support numbers
 `;
 
-// Create the counselling recommendation agent
 export async function createCounsellingAgent() {
   const apiKey = process.env.OPENAI_API_KEY;
   
@@ -95,17 +91,15 @@ export async function createCounsellingAgent() {
     throw new Error("OPENAI_API_KEY environment variable is not set");
   }
 
-  // Initialize the LLM
   const llm = new ChatOpenAI({
     openAIApiKey: apiKey,
     modelName: "gpt-4-turbo-preview",
     temperature: 0.7,
   });
 
-  // Tools available to the agent
+
   const tools = [searchPractitionersTool];
 
-  // Create the React agent
   const agent = createReactAgent({
     llm,
     tools,
@@ -115,7 +109,6 @@ export async function createCounsellingAgent() {
   return agent;
 }
 
-// Main function to get practitioner recommendations
 export async function getCounsellingRecommendation(
   concernDescription: string
 ): Promise<string> {
@@ -126,7 +119,6 @@ export async function getCounsellingRecommendation(
       messages: [{ role: "user", content: concernDescription }],
     });
 
-    // Extract the final message from the agent's response
     const messages = result.messages;
     const lastMessage = messages[messages.length - 1];
     
@@ -144,15 +136,13 @@ export async function getStructuredRecommendation(
   concernDescription: string
 ): Promise<RecommendationResult[]> {
   try {
-    // Search for matching practitioners
     const results = await searchPractitioners(concernDescription, 3);
 
     if (results.length === 0) {
       throw new Error("No matching practitioners found");
     }
 
-    // Convert to structured format
-    return results.map(({ document, score }) => {
+      return results.map(({ document, score }) => {
       const metadata = document.metadata;
       
       const practitioner: Practitioner = {
@@ -170,7 +160,6 @@ export async function getStructuredRecommendation(
         acceptingNewClients: metadata.acceptingNewClients as boolean,
       };
 
-      // Determine urgency based on keywords in description
       let urgency: "routine" | "soon" | "urgent" | "crisis" = "routine";
       const crisisKeywords = ["suicide", "suicidal", "self-harm", "end my life", "kill myself", "don't want to live"];
       const urgentKeywords = ["severe", "overwhelming", "can't cope", "panic", "crisis"];

@@ -1,5 +1,3 @@
-// Pinecone client configuration and initialization
-
 import { Pinecone } from "@pinecone-database/pinecone";
 
 let pineconeClient: Pinecone | null = null;
@@ -25,7 +23,6 @@ export async function getPineconeClient(): Promise<Pinecone> {
 export const PINECONE_INDEX_NAME = process.env.PINECONE_INDEX_NAME || "counselling-practitioners";
 export const PINECONE_NAMESPACE = "practitioners";
 
-// Initialize Pinecone index (run this once to create the index)
 export async function initializePineconeIndex() {
   const client = await getPineconeClient();
   
@@ -43,13 +40,13 @@ export async function initializePineconeIndex() {
       spec: {
         serverless: {
           cloud: "aws",
-          region: "us-east-1" // Change based on your preference
+          region: "us-east-1" 
         }
       }
     });
     
     console.log("Waiting for index to be ready...");
-    // Wait for index to be ready
+  
     await new Promise(resolve => setTimeout(resolve, 60000));
   } else {
     console.log(`Index ${PINECONE_INDEX_NAME} already exists`);

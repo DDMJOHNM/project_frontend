@@ -1,5 +1,3 @@
-// Types for the mental health counselling practitioner recommendation system
-
 export interface Practitioner {
   id: string;
   name: string;

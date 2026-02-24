@@ -1,5 +1,3 @@
-// Vector store abstraction - supports both Chroma (local) and Pinecone (production)
-
 import { v4 as uuidv4 } from "uuid";
 // @ts-expect-error - flat has no types; used for metadata flattening (matches LangChain)
 import flatten from "flat";
@@ -12,16 +10,14 @@ const TEXT_KEY = "text"; // Pinecone metadata key for page content (matches Lang
 
 export type VectorStoreType = "chroma" | "pinecone";
 
-// Determine which vector store to use based on environment
 export function getVectorStoreType(): VectorStoreType {
   const useLocal = process.env.USE_LOCAL_VECTOR_DB === "true";
   return useLocal ? "chroma" : "pinecone";
 }
 
-// Chroma configuration
+
 const CHROMA_COLLECTION = "counselling-practitioners";
 
-// Helper functions to get Chroma config at runtime
 function getChromaUrl() {
   return process.env.CHROMA_URL || "http://localhost:8000";
 }
@@ -30,7 +26,6 @@ function isChromaInMemory() {
   return process.env.CHROMA_IN_MEMORY === "true";
 }
 
-// Get the appropriate vector store based on environment
 export async function getVectorStore(): Promise<VectorStore> {
   const embeddings = getEmbeddings();
   const storeType = getVectorStoreType();
@@ -69,7 +64,6 @@ export async function getVectorStore(): Promise<VectorStore> {
   }
 }
 
-// Create and seed a new vector store
 export async function createVectorStore(documents: Document[]): Promise<VectorStore> {
   if (documents.length === 0) {
     throw new Error("Cannot create vector store: documents array is empty");
@@ -81,9 +75,7 @@ export async function createVectorStore(documents: Document[]): Promise<VectorSt
   console.log(`Creating vector store: ${storeType.toUpperCase()} with ${documents.length} documents`);
 
   if (storeType === "chroma") {
-    // Create Chroma collection - dynamic import
     const { Chroma } = await import("@langchain/community/vectorstores/chroma");
-    
     const chromaConfig: { collectionName: string; url?: string } = {
       collectionName: CHROMA_COLLECTION,
     };
@@ -95,7 +87,7 @@ export async function createVectorStore(documents: Document[]): Promise<VectorSt
     
     return await Chroma.fromDocuments(documents, embeddings, chromaConfig);
   } else {
-    // Create Pinecone index and store documents
+   
     const { PineconeStore } = await import("@langchain/pinecone");
     const pineconeClient = await getPineconeClient();
     const index = pineconeClient.index(PINECONE_INDEX_NAME);
@@ -199,7 +191,6 @@ export async function clearVectorStore(): Promise<void> {
   }
 }
 
-// Get vector store information
 export function getVectorStoreInfo() {
   const storeType = getVectorStoreType();
 
