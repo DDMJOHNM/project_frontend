@@ -73,11 +73,7 @@ export function CounsellingRecommendation() {
 
   return (
     <div className="max-w-4xl mx-auto">
-      <h2 className="text-xl font-semibold mb-4 text-gray-700">
-        Find Your Counsellor
-      </h2>
-
-      {/* Example Queries */}
+     {/* Example Queries */}
       <div className="mb-4">
         <p className="text-sm text-gray-600 mb-2">Common concerns:</p>
         <div className="flex flex-wrap gap-2">

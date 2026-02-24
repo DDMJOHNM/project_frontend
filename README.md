@@ -80,7 +80,9 @@ CHROMA_IN_MEMORY=true
 npm run seed:counselling && npm run dev
 
 # Option 2: Docker ChromaDB (persistent data)
-docker run -p 8000:8000 chromadb/chroma
+docker run -d -p 8001:8000 -e CHROMA_SERVER_CORS_ALLOW_ORIGINS='["*"]' chromadb/chroma
+CHROMA_URL=http://localhost:8001
+CHROMA_IN_MEMORY=false
 USE_LOCAL_VECTOR_DB=true
 npm run seed:counselling && npm run dev
 ```

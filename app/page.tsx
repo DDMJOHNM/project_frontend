@@ -2,7 +2,6 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import VoiceAgent from './components/VoiceAgent'
 import Logo from './components/Logo'
-import { CounsellingRecommendation } from './components/CounsellingRecommendation'
 
 // Force dynamic rendering (no caching) - required for auth checks
 export const dynamic = 'force-dynamic'
@@ -64,28 +63,12 @@ export default function IndexPage() {
       <div className="pt-8 pl-8">
         <Logo />
       </div>
-      <div className="container mx-auto py-8 px-4">
-        <h1 className="text-2xl font-semibold mb-6 text-center text-purple-400 tracking-widest">
-          Client Manager
-        </h1>
-        
-        {/* Two-column layout */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Left column - Voice Agent */}
-          <div className="min-h-[600px] overflow-hidden shadow-lg bg-stone-50 p-6 rounded-lg">
-            <h2 className="text-lg font-semibold mb-4 pb-3 border-b border-purple-400 text-purple-400">
-              Voice Agent
-            </h2>
-            <VoiceAgent />
-          </div>
-          
-          {/* Right column - Counsellor Recommendation */}
-          <div className="min-h-[600px] overflow-hidden shadow-lg bg-white p-6 rounded-lg border border-purple-200">
-            <h2 className="text-lg font-semibold mb-4 pb-3 border-b border-purple-400 text-purple-400">
-              Counsellor Matching
-            </h2>
-            <CounsellingRecommendation />
-          </div>
+      <div className="container mx-auto py-8 px-4 max-w-4xl">
+        <div className="min-h-[600px] overflow-hidden shadow-lg bg-stone-50 p-6 rounded-lg">
+          <h2 className="text-lg font-semibold mb-4 pb-3 border-b border-purple-400 text-purple-400">
+            Client Manager
+          </h2>
+          <VoiceAgent />
         </div>
       </div>      
     </div>

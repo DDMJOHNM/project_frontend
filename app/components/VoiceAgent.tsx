@@ -14,6 +14,7 @@ export default function VoiceAgent() {
   } | null>(null)
   const [error, setError] = useState('')
   const [hasStarted, setHasStarted] = useState(false)
+  const [detailsSaved, setDetailsSaved] = useState(false)
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
@@ -244,6 +245,7 @@ export default function VoiceAgent() {
                     onClick={() => {
                       // Placeholder: here you could POST these details to your backend
                       console.log('Saved details:', parsedDetails)
+                      setDetailsSaved(true)
                       alert('Details saved (currently just logged to console).')
                     }}
                   >
@@ -256,6 +258,7 @@ export default function VoiceAgent() {
                       // Allow user to re-record / re-run
                       setParsedDetails(null)
                       setAgentResponse('')
+                      setDetailsSaved(false)
                     }}
                   >
                     Edit / Re-record
@@ -273,11 +276,16 @@ export default function VoiceAgent() {
               </div>
             </div>
           )}
-
-          <CounsellingRecommendation />
           </div>
         )}
       </div>
+
+      {detailsSaved && (
+        <div className="bg-gray-100 rounded-lg shadow-lg p-6 mt-6">
+          <h2 className="text-lg font-semibold mb-4 pb-3 text-center border-b border-gray-300 text-gray-500 tracking-widest">Find Your Counsellor</h2>
+          <CounsellingRecommendation />
+        </div>
+      )}
     </div>
   )
 }

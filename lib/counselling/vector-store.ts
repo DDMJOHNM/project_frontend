@@ -14,9 +14,16 @@ export function getVectorStoreType(): VectorStoreType {
 }
 
 // Chroma configuration
-const CHROMA_URL = process.env.CHROMA_URL || "http://localhost:8000";
 const CHROMA_COLLECTION = "counselling-practitioners";
-const CHROMA_IN_MEMORY = process.env.CHROMA_IN_MEMORY === "true";
+
+// Helper functions to get Chroma config at runtime
+function getChromaUrl() {
+  return process.env.CHROMA_URL || "http://localhost:8000";
+}
+
+function isChromaInMemory() {
+  return process.env.CHROMA_IN_MEMORY === "true";
+}
 
 // Get the appropriate vector store based on environment
 export async function getVectorStore(): Promise<VectorStore> {
@@ -34,8 +41,8 @@ export async function getVectorStore(): Promise<VectorStore> {
     };
     
     // Use in-memory mode or server mode based on config
-    if (!CHROMA_IN_MEMORY) {
-      chromaConfig.url = CHROMA_URL;
+    if (!isChromaInMemory()) {
+      chromaConfig.url = getChromaUrl();
     }
     
     try {
@@ -73,8 +80,8 @@ export async function createVectorStore(documents: Document[]): Promise<VectorSt
     };
     
     // Use in-memory mode or server mode based on config
-    if (!CHROMA_IN_MEMORY) {
-      chromaConfig.url = CHROMA_URL;
+    if (!isChromaInMemory()) {
+      chromaConfig.url = getChromaUrl();
     }
     
     return await Chroma.fromDocuments(documents, embeddings, chromaConfig);
@@ -126,10 +133,10 @@ export function getVectorStoreInfo() {
   return {
     type: storeType,
     url: storeType === "chroma" 
-      ? (CHROMA_IN_MEMORY ? "In-Memory (No Server)" : CHROMA_URL)
+      ? (isChromaInMemory() ? "In-Memory (No Server)" : getChromaUrl())
       : "Pinecone Cloud",
     collection: storeType === "chroma" ? CHROMA_COLLECTION : PINECONE_INDEX_NAME,
-    mode: storeType === "chroma" ? (CHROMA_IN_MEMORY ? "memory" : "server") : "cloud",
+    mode: storeType === "chroma" ? (isChromaInMemory() ? "memory" : "server") : "cloud",
     configured: storeType === "chroma" 
       ? true // Chroma doesn't need API keys
       : !!(process.env.PINECONE_API_KEY),

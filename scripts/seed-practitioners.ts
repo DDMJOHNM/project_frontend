@@ -2,6 +2,11 @@
 // Supports both Chroma (local) and Pinecone (production)
 // Run with: npx tsx scripts/seed-practitioners.ts
 
+// Load environment variables from .env.local
+import { config } from 'dotenv';
+import { resolve } from 'path';
+config({ path: resolve(process.cwd(), '.env.local') });
+
 import { initializePineconeIndex } from "../lib/counselling/pinecone-client";
 import { seedPractitioners } from "../lib/counselling/embeddings";
 import { samplePractitioners } from "../lib/counselling/sample-practitioners";
@@ -23,10 +28,14 @@ async function main() {
       await initializePineconeIndex();
       console.log("✓ Pinecone index initialized\n");
     } else {
-      // For Chroma, just verify it's running
-      console.log("Step 1: Verifying Chroma is accessible...");
-      console.log(`Make sure Chroma is running at ${storeInfo.url}`);
-      console.log("Run: docker run -p 8000:8000 chromadb/chroma");
+      // For Chroma
+      console.log("Step 1: Verifying Chroma setup...");
+      if (storeInfo.mode === "memory") {
+        console.log("Using in-memory Chroma (no server required)");
+      } else {
+        console.log(`Make sure Chroma is running at ${storeInfo.url}`);
+        console.log("Run: docker run -p 8000:8000 chromadb/chroma");
+      }
       console.log("✓ Ready to seed\n");
     }
 
@@ -42,8 +51,14 @@ async function main() {
     console.error("Error seeding database:", error);
     
     if (getVectorStoreType() === "chroma") {
-      console.error("\n❌ Chroma Error: Make sure Chroma is running!");
-      console.error("Start Chroma with: docker run -p 8000:8000 chromadb/chroma");
+      const storeInfo = getVectorStoreInfo();
+      if (storeInfo.mode === "memory") {
+        console.error("\n❌ Chroma Error: In-memory mode failed!");
+        console.error("Check your OPENAI_API_KEY is set correctly.");
+      } else {
+        console.error("\n❌ Chroma Error: Make sure Chroma is running!");
+        console.error("Start Chroma with: docker run -p 8000:8000 chromadb/chroma");
+      }
     }
     
     process.exit(1);
