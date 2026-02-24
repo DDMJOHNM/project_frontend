@@ -476,6 +476,23 @@ const corsOptions = {
 4. Wait for build to complete
 5. Test again
 
+### Counselling recommend endpoint returns 500
+
+**Check Amplify Console → Environment variables:**
+
+| Variable | Required in prod | Description |
+|----------|------------------|-------------|
+| `OPENAI_API_KEY` | Yes | OpenAI API key |
+| `PINECONE_API_KEY` | Yes | Pinecone API key (when not using Chroma) |
+| `PINECONE_INDEX_NAME` | Yes | Pinecone index name (default: `counselling-practitioners`) |
+| `USE_LOCAL_VECTOR_DB` | Set to `false` or leave unset | Use Pinecone in production |
+
+**Other causes:**
+
+- **Timeout (30s)**: Amplify/API Gateway limits requests to ~30s. Long agent responses may time out.
+- **Pinecone index**: Ensure the index exists in the same Pinecone project and has been seeded (`pnpm seed:counselling`).
+- **Logs**: Check Amplify build logs and CloudWatch for the actual error message.
+
 ### Backend Connection Issues
 
 **Check:**

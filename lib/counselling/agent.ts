@@ -27,7 +27,7 @@ Match ${index + 1} (Similarity Score: ${(score * 100).toFixed(1)}%):
 - Email: ${metadata.email}
 - Address: ${metadata.address || "N/A"}
 - Availability: ${metadata.availability || "N/A"}
-- Accepting New Patients: ${metadata.acceptingNewPatients ? "Yes" : "No"}
+- Accepting New Clients: ${metadata.acceptingNewClients ? "Yes" : "No"}
 
 Expertise Summary:
 ${document.pageContent.substring(0, 300)}...

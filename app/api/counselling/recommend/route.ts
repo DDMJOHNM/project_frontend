@@ -3,6 +3,7 @@ import { getCounsellingRecommendation, getStructuredRecommendation } from "@/lib
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+export const maxDuration = 30; // Amplify/API Gateway limit; agent + vector search can be slow
 
 interface RequestBody {
   description: string;
@@ -54,12 +55,32 @@ export async function POST(request: NextRequest) {
       });
     }
   } catch (error) {
-    console.error("Error in counselling recommendation API:", error);
-    
+    const err = error instanceof Error ? error : new Error(String(error));
+    console.error("[counselling/recommend] Error:", err.message, err.stack);
+
+    // Surface actionable details (safe to expose - no secrets)
+    const details = err.message;
+    const isConfig =
+      details.includes("not set") ||
+      details.includes("not configured") ||
+      details.includes("environment variable");
+    const isPinecone =
+      details.includes("Pinecone") ||
+      details.includes("pinecone") ||
+      details.includes("index");
+    const isTimeout = details.includes("timeout") || details.includes("timed out");
+
     return NextResponse.json(
       {
         error: "Failed to get counselling recommendation",
-        details: error instanceof Error ? error.message : String(error),
+        details,
+        hint: isConfig
+          ? "Check Amplify Console → Environment variables: OPENAI_API_KEY, PINECONE_API_KEY, PINECONE_INDEX_NAME, USE_LOCAL_VECTOR_DB=false"
+          : isPinecone
+            ? "Verify Pinecone index exists, is in same project, and has been seeded"
+            : isTimeout
+              ? "Request timed out (Amplify limit ~30s). Consider simplifying the query."
+              : undefined,
       },
       { status: 500 }
     );
