@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef } from 'react'
-
+import { CounsellingRecommendation } from './CounsellingRecommendation'
 export default function VoiceAgent() {
   const [isRecording, setIsRecording] = useState(false)
   const [transcript, setTranscript] = useState('')
@@ -140,9 +140,10 @@ export default function VoiceAgent() {
   }
 
   return (
-    <div className="py-8 max-w-2xl ml-8">
-      <div className="bg-gray-100 rounded-lg shadow-lg p-6">
-        <h2 className="text-lg font-semibold mb-4 pb-3 text-center border-b border-gray-300 text-gray-500 tracking-widest">Create Account Assistant</h2>
+    <div className="py-8 px-4">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className="bg-gray-100 rounded-lg shadow-lg p-6">
+          <h2 className="text-lg font-semibold mb-4 pb-3 text-center border-b border-gray-300 text-gray-500 tracking-widest">Create Account Assistant</h2>
         
         {!hasStarted ? (
           <div className="flex flex-col items-center gap-6 py-8">
@@ -275,6 +276,12 @@ export default function VoiceAgent() {
           )}
           </div>
         )}
+        </div>
+
+        <div className="bg-gray-100 rounded-lg shadow-lg p-6">
+          <h2 className="text-lg font-semibold mb-4 pb-3 text-center border-b border-gray-300 text-gray-500 tracking-widest">Find Your Counsellor</h2>
+          <CounsellingRecommendation />
+        </div>
       </div>
     </div>
   )

@@ -63,12 +63,12 @@ export default function IndexPage() {
       <div className="pt-8 pl-8">
         <Logo />
       </div>
-      <div className="container mx-auto py-8">
-        <div className="min-h-7 min-w-1rounded overflow-hidden shadow-lg bg-stone-50 p-6 rounded-lg"> 
-          <h1 className="text-xl font-semibold mb-4 pb-3 text-center border-b border-purple-400 text-purple-400 tracking-widest">Client Manager</h1>
-          <VoiceAgent />
-        </div>
-      </div>
+      <div className="container mx-auto py-8 px-4">
+        <h2 className="text-2xl font-semibold mb-6 text-center text-purple-400 tracking-widest">
+          Client Manager
+        </h2>
+        <VoiceAgent />
+      </div>      
     </div>
   )
 }
