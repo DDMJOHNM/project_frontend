@@ -1,4 +1,4 @@
-import { v4 as uuidv4 } from "uuid";
+import { randomUUID } from "node:crypto";
 // @ts-expect-error - flat has no types; used for metadata flattening (matches LangChain)
 import flatten from "flat";
 import { VectorStore } from "@langchain/core/vectorstores";
@@ -146,7 +146,7 @@ async function seedPineconeDirect(
         delete metadata[key];
     }
     return {
-      id: (doc.metadata.id as string) ?? uuidv4(),
+      id: (doc.metadata.id as string) ?? randomUUID(),
       values: vectors[idx],
       metadata,
     };
