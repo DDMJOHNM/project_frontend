@@ -5,8 +5,7 @@ import { useState } from "react";
 interface RecommendationResult {
   success: boolean;
   format: string;
-  recommendation?: string;
-  recommendations?: Array<{
+  recommendations: Array<{
     practitioner: {
       name: string;
       title: string;
@@ -23,7 +22,6 @@ interface RecommendationResult {
 
 export function CounsellingRecommendation() {
   const [description, setDescription] = useState("");
-  const [format, setFormat] = useState<"text" | "structured">("text");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<RecommendationResult | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -46,7 +44,7 @@ export function CounsellingRecommendation() {
         },
         body: JSON.stringify({
           description,
-          format,
+          format: "structured",
         }),
       });
 
@@ -75,13 +73,13 @@ export function CounsellingRecommendation() {
     <div className="max-w-4xl mx-auto">
      {/* Example Queries */}
       <div className="mb-4">
-        <p className="text-sm text-gray-600 mb-2">Common concerns:</p>
+        <p className="text-xl font-light text-gray-400 mb-2 text-center">Common concerns:</p>
         <div className="flex flex-wrap gap-2">
           {exampleQueries.map((query, index) => (
             <button
               key={index}
               onClick={() => setDescription(query)}
-              className="text-xs px-3 py-1 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-full transition-colors"
+              className="text-xs px-3 py-1 bg-teal-50 hover:bg-teal-100 text-teal-600 rounded-full transition-colors"
             >
               {query}
             </button>
@@ -91,7 +89,7 @@ export function CounsellingRecommendation() {
 
       {/* Input Area */}
       <div className="mb-4">
-        <label className="block text-sm font-medium mb-2 text-gray-700">
+        <label className="block text-gray-700 mb-6 text-center">
           What brings you here today?
         </label>
         <textarea
@@ -103,40 +101,21 @@ export function CounsellingRecommendation() {
         />
       </div>
 
-      {/* Format Selection */}
-      <div className="mb-4 flex gap-4">
-        <label className="flex items-center">
-          <input
-            type="radio"
-            name="format"
-            value="text"
-            checked={format === "text"}
-            onChange={(e) => setFormat(e.target.value as "text" | "structured")}
-            className="mr-2"
-          />
-          Text Response
-        </label>
-        <label className="flex items-center">
-          <input
-            type="radio"
-            name="format"
-            value="structured"
-            checked={format === "structured"}
-            onChange={(e) => setFormat(e.target.value as "text" | "structured")}
-            className="mr-2"
-          />
-          Structured Data
-        </label>
-      </div>
-
       {/* Submit Button */}
-      <button
-        onClick={getRecommendation}
-        disabled={loading || !description.trim()}
-        className="w-full bg-purple-600 hover:bg-purple-700 disabled:bg-gray-400 text-white font-medium py-3 px-6 rounded-lg transition-colors"
-      >
-        {loading ? "Finding a counsellor..." : "Find a Counsellor"}
-      </button>
+      <div className="flex justify-center">
+        <button
+          onClick={getRecommendation}
+          disabled={loading || !description.trim()}
+          className="px-0.5 py-0.5 bg-purple-700 hover:bg-gradient-to-r hover:from-purple-600 hover:via-purple-700 hover:to-purple-800 text-white font-semibold text-sm rounded-lg transition-all duration-200 shadow-md flex items-center justify-center tracking-widest text-glow-purple disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          <span className="flex items-center gap-2 px-3 py-1 border border-white rounded-lg">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 9a2 2 0 114 0 2 2 0 01-4 0zm-4.5 0a2 2 0 114 0 2 2 0 01-4 0zM15 9a2 2 0 114 0 2 2 0 01-4 0z" />
+            </svg>
+            {loading ? "Finding..." : "Find"}
+          </span>
+        </button>
+      </div>
 
       {/* Error Display */}
       {error && (
@@ -148,18 +127,8 @@ export function CounsellingRecommendation() {
       {/* Results Display */}
       {result && (
         <div className="mt-6">
-          {format === "text" ? (
-            <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-              <h3 className="font-semibold mb-2 text-purple-800">
-                Recommended Counsellor:
-              </h3>
-              <div className="whitespace-pre-wrap text-gray-800 leading-relaxed">
-                {result.recommendation}
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {result.recommendations?.map((rec, index) => (
+          <div className="space-y-4">
+            {result.recommendations.map((rec, index) => (
                 <div
                   key={index}
                   className="p-4 border border-purple-100 rounded-lg bg-white shadow-sm hover:shadow-md transition-shadow"
@@ -212,8 +181,7 @@ export function CounsellingRecommendation() {
                   </div>
                 </div>
               ))}
-            </div>
-          )}
+          </div>
         </div>
       )}
     </div>
