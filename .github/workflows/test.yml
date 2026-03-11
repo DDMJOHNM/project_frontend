@@ -41,5 +41,14 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Run tests
+      - name: Install Playwright browsers
+        run: pnpm exec playwright install --with-deps chromium
+
+      - name: Run Jest unit tests
         run: pnpm test
+
+      - name: Run Playwright E2E tests
+        continue-on-error: true
+        env:
+          CI: true
+        run: pnpm test:e2e
