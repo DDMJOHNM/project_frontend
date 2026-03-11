@@ -289,6 +289,9 @@ pnpm test:watch
 # Run Playwright E2E tests (starts app automatically if not running)
 pnpm test:e2e
 
+# Run Playwright in UI mode (interactive debugger)
+pnpm test:e2e:ui
+
 # Run all tests (Jest + Playwright)
 pnpm test:all
 ```
@@ -300,6 +303,7 @@ pnpm test:all
 | `pnpm test` | Run Jest unit tests |
 | `pnpm test:watch` | Run Jest in watch mode |
 | `pnpm test:e2e` | Run Playwright E2E tests (auto-starts app if needed) |
+| `pnpm test:e2e:ui` | Run Playwright in UI mode (interactive debugger) |
 | `pnpm test:all` | Run Jest + Playwright tests |
 
 **CI:** Jest runs on every push to `main`/`develop`. Playwright runs with `continue-on-error: true` until stable.
