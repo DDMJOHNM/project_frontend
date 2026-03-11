@@ -39,8 +39,8 @@ You are helping extract structured user details from a voice transcript.
 
 GOAL:
 - From the given transcript, reliably extract:
-  - firstName
-  - lastName
+  - first_name
+  - last_name
   - email
 
 RULES:
@@ -49,8 +49,8 @@ RULES:
 - Do NOT include any explanation, prose, or extra text.
 - Your final answer MUST be ONLY a valid JSON object with this exact shape:
   {
-    "firstName": "...",
-    "lastName": "...",
+    "first_name": "...",
+    "last_name": "...",
     "email": "..."
   }
           `.trim(),
@@ -93,13 +93,13 @@ RULES:
       }
     }
 
-    const firstName = typeof parsed.firstName === 'string' ? parsed.firstName : ''
-    const lastName = typeof parsed.lastName === 'string' ? parsed.lastName : ''
+    const first_name = typeof parsed.first_name === 'string' ? parsed.first_name : ''
+    const last_name = typeof parsed.last_name === 'string' ? parsed.last_name : ''
     const email = typeof parsed.email === 'string' ? parsed.email : ''
 
     const result = {
-      firstName,
-      lastName,
+      first_name,
+      last_name,
       email,
       rawOutput: rawString,
     }
