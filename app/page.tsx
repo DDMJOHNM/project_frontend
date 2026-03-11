@@ -2,7 +2,6 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import VoiceAgent from './components/VoiceAgent'
 import Logo from './components/Logo'
-import { Client } from './components/Client'
 
 // Force dynamic rendering (no caching) - required for auth checks
 export const dynamic = 'force-dynamic'

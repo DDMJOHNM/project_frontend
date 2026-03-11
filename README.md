@@ -621,6 +621,13 @@ pnpm build
 # Run all tests locally
 pnpm test:all
 
+#Run tests loccaly 
+pnpm run dev && pnpm test:e2e:ui
+
+# Install Test Browsers if needed
+pnpm exec playwright install or 
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pnpm test:e2e:ui
+
 # Trigger redeploy
 git commit --allow-empty -m "Redeploy"
 git push

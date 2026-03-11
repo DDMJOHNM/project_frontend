@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { cookies } from "next/headers";
-import { Client, ClientData } from "@/app/components/Client";
+import type { ClientData } from "@/app/components/Client";
 
 const CLIENT_API_PATH = process.env.CLIENT_API_PATH || "/api/clients/add";
 
