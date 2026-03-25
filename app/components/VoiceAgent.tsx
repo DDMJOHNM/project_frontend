@@ -302,16 +302,16 @@ export default function VoiceAgent() {
         {accountSaved ? null : !hasStarted ? (
           <div className="flex flex-col items-center gap-6 py-8">
             <div className="text-center">
-              <p className="text-xl font-light text-gray-400 mb-3">
+              <p className="text-xl font-light text-gray-700 mb-3">
                 Thank you for choosing Positive Thought Counselling.
               </p>
-              <p className="text-gray-700 mb-6">
+              <p className="text-gray-800 mb-6">
                 Let&apos;s start by getting your account set up. Press the button below and tell us:
               </p>
-              <ul className="text-left bg-white rounded-lg p-4 mb-6 inline-block">
-                <li className="text-gray-700 mb-2">✓ Your first name</li>
-                <li className="text-gray-700 mb-2">✓ Your last name</li>
-                <li className="text-gray-700">✓ Your email address</li>
+              <ul className="text-left rounded-xl p-5 mb-6 inline-block min-w-[16rem] space-y-2 bg-white border-2 border-gray-200 shadow-md ring-1 ring-black/5">
+                <li className="text-gray-900">✓ Your first name</li>
+                <li className="text-gray-900">✓ Your last name</li>
+                <li className="text-gray-900">✓ Your email address</li>
               </ul>
             </div>
             <button
