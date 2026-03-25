@@ -1,4 +1,6 @@
 export interface ClientData {
+    /** Backend client record id (used for PUT /clients/update/:id notes). */
+    client_id?: string;
     first_name: string;
     last_name: string;
     email: string;
