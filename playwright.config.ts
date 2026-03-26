@@ -13,6 +13,7 @@ export default defineConfig({
   use: {
     baseURL,
     trace: 'on-first-retry',
+    video: 'on',
   },
   projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
   webServer: {

@@ -13,10 +13,11 @@ test.describe('Login page', () => {
   test('shows error on invalid credentials', async ({ page }) => {
     await page.goto('/login');
 
-    await page.getByPlaceholder('Email address').fill('invalid@example.com');
-    await page.getByPlaceholder('Password').fill('wrongpassword');
+    await page.getByPlaceholder('Email address').fill('jmason176@gmail.com');
+    await page.getByPlaceholder('Password').fill('SecurePass123!');
     await page.getByRole('button', { name: 'Sign in' }).click();
 
     await expect(page.getByText(/invalid|error|incorrect/i)).toBeVisible({ timeout: 5000 });
   });
 });
+
