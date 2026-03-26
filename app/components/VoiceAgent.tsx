@@ -1,8 +1,15 @@
 'use client'
 
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, useCallback } from 'react'
 import { CounsellingRecommendation } from './CounsellingRecommendation'
 import { ClientData, Client } from '@/app/components/Client'
+import { ResetOnboardingButton } from '@/app/components/ResetOnboardingButton'
+import {
+  clearOnboardingClientEmail,
+  ONBOARDING_RESET_EVENT,
+  persistOnboardingClientEmail,
+  readOnboardingClientEmail,
+} from '@/lib/onboardingStorage'
 
 export default function VoiceAgent() {
   const [isRecording, setIsRecording] = useState(false)
@@ -24,8 +31,19 @@ export default function VoiceAgent() {
   
   const mediaRecorderRef = useRef<MediaRecorder | null>(null)
   const audioChunksRef = useRef<Blob[]>([])
+  /** When true, `onstop` skips transcription (e.g. reset during recording). */
+  const resetAbortRecordingRef = useRef(false)
   /** Email used for the profile GET after save; avoids re-fetching when `client` updates from that response. */
   const profileFetchEmailRef = useRef<string | null>(null)
+
+  /** Restore onboarding session after refresh (email in localStorage). */
+  useEffect(() => {
+    const email = readOnboardingClientEmail()
+    if (!email) return
+    profileFetchEmailRef.current = email
+    setAccountSaved(true)
+    setProfileLoading(true)
+  }, [])
 
   useEffect(() => {
     if (!accountSaved) return
@@ -39,27 +57,35 @@ export default function VoiceAgent() {
 
     fetch(`/api/client?email=${encodeURIComponent(email)}`)
       .then(async (response) => {
-        const payload = await response.json()
+        const payload = (await response.json()) as { error?: string } & Partial<ClientData>
+        if (response.status === 404) {
+          clearOnboardingClientEmail()
+          profileFetchEmailRef.current = null
+          if (!cancelled) {
+            setAccountSaved(false)
+            setClient(null)
+          }
+          return null
+        }
         if (!response.ok || payload.error) {
           throw new Error(typeof payload.error === 'string' ? payload.error : 'Failed to load profile')
         }
         return payload as ClientData
       })
       .then((data) => {
-        if (!cancelled) {
-          setClient((prev) => {
-            const incoming = data as ClientData
-            const incNotes = incoming.initial_consult_notes
-            const prevNotes = prev?.initial_consult_notes
-            return {
-              ...incoming,
-              initial_consult_notes:
-                incNotes != null && String(incNotes).trim() !== ''
-                  ? String(incNotes)
-                  : prevNotes,
-            }
-          })
-        }
+        if (data === null || cancelled) return
+        setClient((prev) => {
+          const incoming = data as ClientData
+          const incNotes = incoming.initial_consult_notes
+          const prevNotes = prev?.initial_consult_notes
+          return {
+            ...incoming,
+            initial_consult_notes:
+              incNotes != null && String(incNotes).trim() !== ''
+                ? String(incNotes)
+                : prevNotes,
+          }
+        })
       })
       .catch((err) => {
         console.error('Client profile fetch:', err)
@@ -72,6 +98,38 @@ export default function VoiceAgent() {
       cancelled = true
     }
   }, [accountSaved])
+
+  const resetOnboardingUi = useCallback(() => {
+    resetAbortRecordingRef.current = true
+    if (mediaRecorderRef.current) {
+      try {
+        mediaRecorderRef.current.stop()
+      } catch {
+        // ignore
+      }
+    }
+    mediaRecorderRef.current = null
+    audioChunksRef.current = []
+    profileFetchEmailRef.current = null
+    setIsRecording(false)
+    setTranscript('')
+    setIsProcessing(false)
+    setAgentResponse('')
+    setParsedDetails(null)
+    setClient(null)
+    setAccountSaved(false)
+    setProfileLoading(false)
+    setEditingAccountDetails(false)
+    setShowCounsellorFinderOverride(false)
+    setError('')
+    setHasStarted(false)
+  }, [])
+
+  useEffect(() => {
+    const handler = () => resetOnboardingUi()
+    window.addEventListener(ONBOARDING_RESET_EVENT, handler)
+    return () => window.removeEventListener(ONBOARDING_RESET_EVENT, handler)
+  }, [resetOnboardingUi])
 
   const hasChosenCounsellor = Boolean(client?.requested_counsellor?.trim())
   const showFindCounsellorSection =
@@ -138,6 +196,7 @@ export default function VoiceAgent() {
 
   const startRecording = async () => {
     try {
+      resetAbortRecordingRef.current = false
       setError('')
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true })
       const mediaRecorder = new MediaRecorder(stream, {
@@ -154,10 +213,13 @@ export default function VoiceAgent() {
       }
 
       mediaRecorder.onstop = async () => {
+        stream.getTracks().forEach((track) => track.stop())
+        if (resetAbortRecordingRef.current) {
+          resetAbortRecordingRef.current = false
+          return
+        }
         const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' })
         await transcribeAudio(audioBlob)
-        
-        stream.getTracks().forEach(track => track.stop())
       }
 
       mediaRecorder.start()
@@ -223,9 +285,14 @@ export default function VoiceAgent() {
       <div className="flex flex-col gap-6 max-w-4xl mx-auto">
         {accountSaved ? (
           <div className="rounded-lg bg-white border border-gray-200 shadow-sm px-4 py-4">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-3">
-              Completed tasks
-            </h3>
+            <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
+              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
+                Completed tasks
+              </h3>
+              <div className="shrink-0 self-start">
+                <ResetOnboardingButton />
+              </div>
+            </div>
             <ul className="space-y-3" role="list">
               <li className="flex items-center gap-3">
                 <span
@@ -466,7 +533,9 @@ export default function VoiceAgent() {
                           data.client && typeof data.client === 'object'
                             ? data.client
                             : parsedDetails
-                        profileFetchEmailRef.current = nextClient.email || parsedDetails.email
+                        const emailForProfile = nextClient.email || parsedDetails.email
+                        profileFetchEmailRef.current = emailForProfile
+                        persistOnboardingClientEmail(emailForProfile)
                         setClient(nextClient)
                         setProfileLoading(true)
                         setAccountSaved(true)
