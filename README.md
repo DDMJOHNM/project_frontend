@@ -290,7 +290,34 @@ pnpm type-check
 
 # Run linter
 pnpm lint
+
+# Run Jest unit tests
+pnpm test
+
+# Run Jest in watch mode
+pnpm test:watch
+
+# Run Playwright E2E tests (starts app automatically if not running)
+pnpm test:e2e
+
+# Run Playwright in UI mode (interactive debugger)
+pnpm test:e2e:ui
+
+# Run all tests (Jest + Playwright)
+pnpm test:all
 ```
+
+### Testing
+
+| Command | Description |
+|---------|-------------|
+| `pnpm test` | Run Jest unit tests |
+| `pnpm test:watch` | Run Jest in watch mode |
+| `pnpm test:e2e` | Run Playwright E2E tests (auto-starts app if needed) |
+| `pnpm test:e2e:ui` | Run Playwright in UI mode (interactive debugger) |
+| `pnpm test:all` | Run Jest + Playwright tests |
+
+**CI:** Jest runs on every push to `main`/`develop`. Playwright runs with `continue-on-error: true` until stable.
 
 ### Testing API Routes Locally
 
@@ -601,6 +628,16 @@ pnpm dev
 
 # Build locally
 pnpm build
+
+# Run all tests locally
+pnpm test:all
+
+#Run tests loccaly 
+pnpm run dev && pnpm test:e2e:ui
+
+# Install Test Browsers if needed
+pnpm exec playwright install or 
+PLAYWRIGHT_CHROMIUM_EXECUTABLE_PATH="/Applications/Google Chrome.app/Contents/MacOS/Google Chrome" pnpm test:e2e:ui
 
 # Trigger redeploy
 git commit --allow-empty -m "Redeploy"
