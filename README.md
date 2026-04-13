@@ -104,6 +104,17 @@ USE_LOCAL_VECTOR_DB=false npm run seed:counselling
 
 ## Architecture Overview  - Client Image Upload And Findings
 
+**Dental photo screening:** a separate Python service (`services/dental-inference/`) runs `prithivMLmods/tooth-agenesis-siglip2`, draws an illustrative calculus-risk dot overlay, computes urgency triage, and uses LangChain + OpenAI for a short summary. The Next.js route `POST /api/dental/analyze` proxies to it when `DENTAL_INFERENCE_URL` is set.
+
+```bash
+cd services/dental-inference && pip install -r requirements.txt
+export OPENAI_API_KEY=sk-...   # optional, for LLM summary on the Python side
+uvicorn main:app --host 0.0.0.0 --port 8002
+# In .env.local: DENTAL_INFERENCE_URL=http://127.0.0.1:8002
+```
+
+See [services/dental-inference/README.md](services/dental-inference/README.md) for API details and limitations (classification does not localize plaque at pixel level).
+
 ## Architecture Overview  - Client Profile and Reports
 
 Image Simularity also vector Db chat gtp can only deduce from texture/color  

@@ -40,8 +40,10 @@ export default function IndexPage() {
         <Logo />
       </div>
       <div className="container mx-auto py-8 px-4">
-        <h2 className="text-2xl font-semibold mb-6 text-center text-purple-400 tracking-widest">
-          Client Manager
+        <h2 className="mb-6 text-center">
+          <span className="inline-block rounded-xl border border-gray-200 bg-white px-6 py-2 text-2xl font-semibold tracking-widest text-purple-900 shadow-[0_6px_24px_rgba(0,0,0,0.12)] ring-1 ring-black/10">
+            Client Onboarding
+          </span>
         </h2>
         <VoiceAgent />  
       </div>      
