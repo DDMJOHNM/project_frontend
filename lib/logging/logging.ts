@@ -62,9 +62,7 @@ class Logger {
         })
       )
       .then((result) => {
-        if (process.env.NODE_ENV === 'development') {
-          console.log('[logger] SQS message sent:', result.MessageId)
-        }
+        console.log('[logger] SQS message sent:', result.MessageId)
       })
       .catch((error: unknown) => {
         const message = error instanceof Error ? error.message : String(error)
