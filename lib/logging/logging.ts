@@ -6,13 +6,13 @@ class Logger {
   private getClient(): SQSClient {
     if (!this.sqs) {
       this.sqs = new SQSClient({
-        region: process.env.AWS_REGION ?? 'us-east-1',
+        region: process.env.REGION ?? 'us-east-1',
         credentials:
-          process.env.AWS_ACCESS_KEY_ID && process.env.AWS_SECRET_ACCESS_KEY
+          process.env.ACCESS_KEY_ID && process.env.SECRET_ACCESS_KEY
             ? {
-                accessKeyId: process.env.AWS_ACCESS_KEY_ID,
-                secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,
-                sessionToken: process.env.AWS_SESSION_TOKEN,
+                accessKeyId: process.env.ACCESS_KEY_ID,
+                secretAccessKey: process.env.SECRET_ACCESS_KEY,
+                sessionToken: process.env.SESSION_TOKEN,
               }
             : undefined,
       })
@@ -28,10 +28,10 @@ class Logger {
     model: string,
     output?: string
   ) {
-    const queueUrl = process.env.AWS_SQS_QUEUE_URL
+    const queueUrl = process.env.SQS_QUEUE_URL
     if (!queueUrl) {
       if (process.env.NODE_ENV === 'development') {
-        console.warn('[logger] AWS_SQS_QUEUE_URL is not set; skipping SQS send')
+        console.warn('[logger] SQS_QUEUE_URL is not set; skipping SQS send')
       }
       return
     }
