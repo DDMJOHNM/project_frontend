@@ -94,7 +94,14 @@ RULES:
       }
     }
 
+    const first_name = typeof parsed.first_name === 'string' ? parsed.first_name : ''
+    const last_name = typeof parsed.last_name === 'string' ? parsed.last_name : ''
+    const email = typeof parsed.email === 'string' ? parsed.email : ''
+
     const result = {
+      first_name,
+      last_name,
+      email,
       rawOutput: rawString,
     }
 
