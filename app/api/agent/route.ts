@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
+import { logger } from '@/lib/logging/logging'
 
 // Initialize OpenAI client lazily to avoid build-time errors
 function getOpenAIClient() {
@@ -93,16 +94,11 @@ RULES:
       }
     }
 
-    const first_name = typeof parsed.first_name === 'string' ? parsed.first_name : ''
-    const last_name = typeof parsed.last_name === 'string' ? parsed.last_name : ''
-    const email = typeof parsed.email === 'string' ? parsed.email : ''
-
     const result = {
-      first_name,
-      last_name,
-      email,
       rawOutput: rawString,
     }
+
+    logger.log('info', 'model.inference.completed', 'chat-completion', 'OpenAI', 'gpt-4o', rawString)
 
     return NextResponse.json({
       success: true,
@@ -110,6 +106,7 @@ RULES:
     })
   } catch (error) {
     console.error('Agent (chat) error:', error)
+    logger.log('error', 'model.inference.failed', 'chat-completion', 'OpenAI', 'gpt-4o', String(error))
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Failed to process agent request',
