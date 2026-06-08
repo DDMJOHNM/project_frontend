@@ -105,7 +105,7 @@ RULES:
       rawOutput: rawString,
     }
 
-    logger.log('info', 'model.inference.completed', 'chat-completion', 'OpenAI', 'gpt-4o', rawString)
+    await logger.log('info', 'model.inference.completed', 'chat-completion', 'OpenAI', 'gpt-4o', rawString)
 
     return NextResponse.json({
       success: true,
@@ -113,7 +113,7 @@ RULES:
     })
   } catch (error) {
     console.error('Agent (chat) error:', error)
-    logger.log('error', 'model.inference.failed', 'chat-completion', 'OpenAI', 'gpt-4o', String(error))
+    await logger.log('error', 'model.inference.failed', 'chat-completion', 'OpenAI', 'gpt-4o', String(error))
     return NextResponse.json(
       {
         error: error instanceof Error ? error.message : 'Failed to process agent request',

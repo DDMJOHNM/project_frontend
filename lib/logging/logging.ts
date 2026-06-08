@@ -20,24 +20,22 @@ class Logger {
     return this.sqs
   }
 
-  public log(
+  public async log(
     level: string,
     event_type: string,
     service_type: string,
     provider: string,
     model: string,
     output?: string
-  ) {
+  ): Promise<void> {
     const queueUrl = process.env.SQS_QUEUE_URL
     if (!queueUrl) {
-      if (process.env.NODE_ENV === 'development') {
-        console.warn('[logger] SQS_QUEUE_URL is not set; skipping SQS send')
-      }
+      console.warn('[logger] SQS_QUEUE_URL is not set; skipping SQS send')
       return
     }
 
-    void this.getClient()
-      .send(
+    try {
+      const result = await this.getClient().send(
         new SendMessageCommand({
           QueueUrl: queueUrl,
           MessageBody: JSON.stringify({
@@ -61,13 +59,11 @@ class Logger {
           }),
         })
       )
-      .then((result) => {
-        console.log('[logger] SQS message sent:', result.MessageId)
-      })
-      .catch((error: unknown) => {
-        const message = error instanceof Error ? error.message : String(error)
-        console.error('[logger] SQS send failed:', message)
-      })
+      console.log('[logger] SQS message sent:', result.MessageId)
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error)
+      console.error('[logger] SQS send failed:', message)
+    }
   }
 }
 
