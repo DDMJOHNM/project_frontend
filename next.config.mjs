@@ -17,7 +17,6 @@ const nextConfig = {
     ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
     SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
     SQS_QUEUE_URL: process.env.SQS_QUEUE_URL,
-    LOG_GROUP: process.env.LOG_GROUP,
   },
   // Webpack configuration for Chroma compatibility
   webpack: (config, { isServer }) => {

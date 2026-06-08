@@ -16,7 +16,6 @@
     "test:counselling": "curl http://localhost:3000/api/counselling/test"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudwatch-logs": "^3.1062.0",
     "@aws-sdk/client-sqs": "^3.1062.0",
     "@langchain/community": "^1.1.17",
     "@langchain/core": "^1.1.27",
