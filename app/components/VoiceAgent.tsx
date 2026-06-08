@@ -183,8 +183,8 @@ export default function VoiceAgent() {
         setParsedDetails({
           first_name: first_name ?? '',
           last_name: last_name ?? '',
-          email: email ?? '',
-        })
+              email: email ?? '',
+            })
         setEditingAccountDetails(false)
         setAgentResponse(rawOutput ?? '')
       }
