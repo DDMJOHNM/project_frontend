@@ -4,8 +4,8 @@ import type { NextRequest } from 'next/server'
 // This array contains paths that don't require authentication
 const publicPaths = ['/login']
 
-export function middleware(request: NextRequest) {
-  // Skip middleware for static export (handled client-side)
+export function proxy(request: NextRequest) {
+  // Skip proxy for static export (handled client-side)
   if (process.env.NEXT_PHASE === 'phase-production-build') {
     return NextResponse.next()
   }

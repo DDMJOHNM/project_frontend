@@ -53,8 +53,9 @@ export async function POST(request: Request) {
 
     const expiresInSeconds = 30 * 60
     const loginTimestamp = Date.now()
+    const cookieStore = await cookies()
     
-    cookies().set('authToken', apiToken, {
+    cookieStore.set('authToken', apiToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
@@ -62,7 +63,7 @@ export async function POST(request: Request) {
       maxAge: expiresInSeconds
     })
     
-    cookies().set('loginTime', loginTimestamp.toString(), {
+    cookieStore.set('loginTime', loginTimestamp.toString(), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',

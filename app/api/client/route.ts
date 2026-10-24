@@ -8,6 +8,11 @@ const CLIENT_GET_PATH = process.env.CLIENT_GET_PATH || "/api/clients/by-email";
 /** PUT `{base}{CLIENT_UPDATE_PATH}/{client_id}` — initial consult notes. Default `/api/clients/update`. */
 const CLIENT_UPDATE_PATH = process.env.CLIENT_UPDATE_PATH || "/api/clients/update";
 
+async function getAuthToken() {
+  const cookieStore = await cookies();
+  return cookieStore.get("authToken")?.value ?? "";
+}
+
 function normalizeClientPayload(body: unknown): ClientData {
   const r = body && typeof body === "object" ? (body as Record<string, unknown>) : {};
   const nested = r.data && typeof r.data === "object" ? (r.data as Record<string, unknown>) : {};
@@ -37,7 +42,7 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: "Query parameter \"email\" is required" }, { status: 400 });
   }
 
-  const authToken = cookies().get("authToken")?.value ?? "";
+  const authToken = await getAuthToken();
   const base = `${backendUrl}${CLIENT_GET_PATH.startsWith("/") ? "" : "/"}${CLIENT_GET_PATH}`;
   const url = `${base}${base.includes("?") ? "&" : "?"}email=${encodeURIComponent(email)}`;
 
@@ -87,7 +92,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON body" }, { status: 400 });
   }
 
-  const authToken = cookies().get("authToken")?.value ?? "";
+  const authToken = await getAuthToken();
   const url = `${backendUrl}${CLIENT_API_PATH.startsWith("/") ? "" : "/"}${CLIENT_API_PATH}`;
 
   const client: ClientData = {
@@ -164,7 +169,7 @@ export async function PUT(request: NextRequest) {
     return NextResponse.json({ error: "client_id is required" }, { status: 400 });
   }
 
-  const authToken = cookies().get("authToken")?.value ?? "";
+  const authToken = await getAuthToken();
   const base = `${backendUrl}${CLIENT_UPDATE_PATH.startsWith("/") ? "" : "/"}${CLIENT_UPDATE_PATH}`.replace(/\/$/, "");
   const url = `${base}/${encodeURIComponent(clientId)}`;
 

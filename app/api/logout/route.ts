@@ -5,8 +5,9 @@ export async function POST() {
   try {
     //TODO: we need to call the backend to logout the user
     //AND Clear the auth cookies
-    cookies().delete('authToken')
-    cookies().delete('loginTime')
+    const cookieStore = await cookies()
+    cookieStore.delete('authToken')
+    cookieStore.delete('loginTime')
     
     return NextResponse.json(
       { message: 'Logged out successfully' },

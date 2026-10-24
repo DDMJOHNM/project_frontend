@@ -5,7 +5,7 @@ import { POST, PUT } from './route'
 import { NextRequest } from 'next/server'
 
 jest.mock('next/headers', () => ({
-  cookies: jest.fn(() => ({
+  cookies: jest.fn(async () => ({
     get: jest.fn(() => undefined),
   })),
 }))

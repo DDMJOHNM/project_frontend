@@ -1,9 +1,9 @@
+/* Import a modern, soft heading font. Must stay above Tailwind so the @import is first. */
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-/* Import a modern, soft heading font */
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;600;700;800&display=swap');
 
 :root {
   --background: #ffffff;

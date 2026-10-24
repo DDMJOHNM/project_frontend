@@ -41,6 +41,8 @@ export default function VoiceAgent() {
     const email = readOnboardingClientEmail()
     if (!email) return
     profileFetchEmailRef.current = email
+    // localStorage is empty during SSR, so this restore has to happen after mount.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAccountSaved(true)
     setProfileLoading(true)
   }, [])

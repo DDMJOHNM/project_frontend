@@ -222,8 +222,8 @@ pnpm install
 
 This will install all required packages including:
 
-- Next.js 14
-- React 18
+- Next.js 16
+- React 19
 - OpenAI SDK
 - TypeScript
 - Tailwind CSS
@@ -260,7 +260,7 @@ pnpm dev
 You should see:
 
 ```
-▲ Next.js 14.x.x
+▲ Next.js 16.x.x
 - Local:        http://localhost:3000
 - Environments: .env.local
 

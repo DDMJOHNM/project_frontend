@@ -2,9 +2,11 @@
 const nextConfig = {
   // AWS Amplify hosting - supports API routes
   output: "standalone", // Required for Amplify SSR; creates self-contained server bundle
+  agentRules: false,
   images: {
     unoptimized: true,
   },
+  serverExternalPackages: ["chromadb", "@chroma-core/default-embed"],
   // Explicitly include environment variables for Lambda/runtime (set in Amplify Console)
   env: {
     OPENAI_API_KEY: process.env.OPENAI_API_KEY,
@@ -17,18 +19,6 @@ const nextConfig = {
     ACCESS_KEY_ID: process.env.ACCESS_KEY_ID,
     SECRET_ACCESS_KEY: process.env.SECRET_ACCESS_KEY,
     SQS_QUEUE_URL: process.env.SQS_QUEUE_URL,
-  },
-  // Webpack configuration for Chroma compatibility
-  webpack: (config, { isServer }) => {
-    if (isServer) {
-      // Mark chromadb as external to avoid bundling issues
-      config.externals = config.externals || [];
-      config.externals.push({
-        'chromadb': 'commonjs chromadb',
-        '@chroma-core/default-embed': 'commonjs @chroma-core/default-embed',
-      });
-    }
-    return config;
   },
 };
 

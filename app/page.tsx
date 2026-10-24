@@ -8,9 +8,9 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 export const fetchCache = 'force-no-store'
 
-export default function IndexPage() {
+export default async function IndexPage() {
   // Check authentication server-side by reading the HTTP-only cookie
-  const cookieStore = cookies()
+  const cookieStore = await cookies()
   const authToken = cookieStore.get('authToken')
   const loginTime = cookieStore.get('loginTime')
   
@@ -21,6 +21,8 @@ export default function IndexPage() {
   
   if (loginTime) {
     const loginTimestamp = parseInt(loginTime.value)
+    // Session expiry is the time of this request.
+    // eslint-disable-next-line react-hooks/purity
     const now = Date.now()
     const sessionDuration = now - loginTimestamp
     const maxSessionDuration = 30 * 60 * 1000 // 30 minutes in milliseconds - FOR TESTING
