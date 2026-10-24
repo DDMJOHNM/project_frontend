@@ -197,7 +197,7 @@ git push
 
 ### Prerequisites
 
-- **Node.js**: Version 20 or higher ([Download](https://nodejs.org/))
+- **Node.js**: 24.22.1 or later on the 24 LTS line ([Download](https://nodejs.org/)). This is the October 21, 2026 security release. `.nvmrc` pins the exact version Amplify and CI install.
 - **pnpm**: Package manager ([Install](https://pnpm.io/installation))
   ```bash
   npm install -g pnpm

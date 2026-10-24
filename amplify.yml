@@ -3,10 +3,17 @@ frontend:
   phases:
     preBuild:
       commands:
+        # Node 24.22.1 is the Oct 21 2026 LTS security release. Amplify's SSR
+        # runtime matches the Node major that builds the app.
+        - nvm install
+        - nvm use
+        - node --version
         - npm install -g pnpm@10
         - pnpm install
     build:
       commands:
+        - nvm use
+        - node --version
         - pnpm test
         - env | grep -i openai
         - pnpm build
